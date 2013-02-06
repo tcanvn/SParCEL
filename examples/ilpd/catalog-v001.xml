@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri id="User Entered Import Resolution" name="file:data/ilpd/ilpd.owl" uri="ilpd.owl"/>
+    <uri id="User Entered Import Resolution" name="file:data/ilpd.owl" uri="ilpd.owl"/>
+    <group id="Folder Repository, directory=file:/C:/Users/actran/Dropbox/Research/coding-2012/mu-shabd-learning-exception/data/ilpd/, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1357880193775" name="http://ilpd.ics.uci.edu" uri="ilpd.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1357880193775" name="http://obs.ilpd.ics.uci.edu#" uri="ilpd_obs.owl"/>
+    </group>
+</catalog>
