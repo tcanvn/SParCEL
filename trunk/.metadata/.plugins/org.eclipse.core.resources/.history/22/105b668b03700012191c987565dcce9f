@@ -1,0 +1,8 @@
+package org.dllearner.cli.ParCEL;
+
+public class CLI extends org.dllearner.cli.CLI {
+
+	public static void main(String[] args) {
+		
+	}
+}

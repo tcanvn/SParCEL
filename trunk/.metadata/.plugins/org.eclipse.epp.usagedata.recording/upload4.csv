@@ -1,0 +1,226 @@
+what,kind,bundleId,bundleVersion,description,time
+deactivated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123625871
+activated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123670181
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123670239
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123671958
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123675155
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123677022
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123685752
+executed,command,org.eclipse.ui,3.6.2.M20110203-1100,"org.eclipse.ui.file.save",1360123700701
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123702166
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123704508
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123705573
+executed,command,org.eclipse.ui.workbench.texteditor,3.6.1.r361_v20100714-0800,"org.eclipse.ui.edit.text.goto.lineEnd",1360123705669
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123706617
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123707681
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123708727
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123709770
+executed,command,org.eclipse.ui,3.6.2.M20110203-1100,"org.eclipse.ui.file.save",1360123710805
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123710897
+jar,m2e.packaging,org.eclipse.m2e.core,1.0.100,"jar",1360123714021
+clean:default-clean:clean,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-clean-plugin:2.4.1",1360123714021
+xmlbeans:default:generate-sources,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.codehaus.mojo:xmlbeans-maven-plugin:2.3.3",1360123714021
+resources:default-resources:process-resources,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-resources-plugin:2.5",1360123714021
+compile:default-compile:compile,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-compiler-plugin:2.0.2",1360123714021
+testResources:default-testResources:process-test-resources,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-resources-plugin:2.5",1360123714021
+testCompile:default-testCompile:test-compile,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-compiler-plugin:2.0.2",1360123714021
+test:default-test:test,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-surefire-plugin:2.4.3",1360123714021
+jar:default-jar:package,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-jar-plugin:2.3.1",1360123714021
+shade:default:package,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-shade-plugin:1.6",1360123714021
+install:default-install:install,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-install-plugin:2.3.1",1360123714021
+deploy:default-deploy:deploy,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-deploy-plugin:2.5",1360123714021
+site:default-site:site,m2e.plugins,org.eclipse.m2e.core,1.0.100,"org.apache.maven.plugins:maven-site-plugin:2.0.1",1360123714021
+deactivated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123714620
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123715059
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123716112
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123717169
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123718217
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123719323
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123720385
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123721458
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123722504
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123723559
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123724611
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123725671
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123726730
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123727776
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123728832
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123729880
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123730926
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123731970
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123733019
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123734072
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123735123
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123736190
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123737258
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123738306
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123739371
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123740437
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123741594
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123742639
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123743694
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123744751
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123745795
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123746843
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123747956
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123749003
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123750044
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123751088
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123752137
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123753196
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123754241
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123755331
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123756370
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123757509
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123758553
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123759674
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123760739
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123761783
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123762826
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123763909
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123764956
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123766003
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123767063
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123768119
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123769252
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123770298
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123771350
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123772401
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123773445
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123774515
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123775562
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123776687
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123777753
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123778797
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123779839
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123780880
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123781922
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123782964
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123784008
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123785111
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123786154
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123787222
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123788266
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123789352
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123790397
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123791439
+activated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123791469
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123791531
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123792505
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123793549
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123794600
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123795653
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123796701
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123797745
+executed,command,org.eclipse.ui.workbench.texteditor,3.6.1.r361_v20100714-0800,"org.eclipse.ui.edit.text.goto.textStart",1360123797885
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123798791
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123799836
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123800897
+executed,command,org.eclipse.ui,3.6.2.M20110203-1100,"org.eclipse.ui.edit.copy",1360123801095
+executed,command,org.eclipse.ui,3.6.2.M20110203-1100,"org.eclipse.ui.edit.copy",1360123801599
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123801942
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123802983
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123804031
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123805071
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123806113
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123807184
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123808262
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123809397
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123810438
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123811611
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123812658
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123813721
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123814765
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123815869
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123816913
+executed,command,org.eclipse.ui.workbench.texteditor,3.6.1.r361_v20100714-0800,"org.eclipse.ui.edit.text.goto.textStart",1360123817238
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123817951
+executed,command,org.eclipse.ui,3.6.2.M20110203-1100,"org.eclipse.ui.edit.findReplace",1360123818045
+deactivated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123818056
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123819005
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123820046
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123821088
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123822129
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123823171
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123824224
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123825277
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123826325
+activated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123826428
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123827400
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123828440
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123829495
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123830539
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123831599
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123832641
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123833697
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123834744
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123835810
+deactivated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123836536
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123836863
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123837907
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123838951
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123839996
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123841052
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123842098
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123843182
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123844253
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123845323
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123846378
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123847436
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123848496
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123849541
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123850584
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123851628
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123853095
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123854147
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123855482
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123856524
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123857567
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123858609
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123859649
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123860753
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123861796
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123862877
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123863921
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123864968
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123866010
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123867090
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123868132
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123869241
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123873601
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123874648
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123875699
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123876747
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123877817
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123878864
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123880000
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123881097
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123882159
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123883261
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123884304
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123885347
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123886408
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123887454
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123888494
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123889537
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123890575
+activated,workbench,org.eclipse.ui.workbench,3.6.2.M20110210-1200,"",1360123890945
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123891618
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123892660
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123893703
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123894041
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123894744
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123895791
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123896835
+activated,editor,org.eclipse.m2e.editor,1.0.100.20110804-1717,"org.eclipse.m2e.editor.MavenPomEditor",1360123897376
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123897902
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123898945
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123899989
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123901031
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123902081
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123903122
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123904205
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123905248
+executed,command,org.eclipse.ui.workbench.texteditor,3.6.1.r361_v20100714-0800,"org.eclipse.ui.edit.text.goto.textStart",1360123905256
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123906365
+error,log,,,"JavaBuilder handling ImageBuilderInternalException while building: parcel-components-core",1360123907404
