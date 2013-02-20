@@ -77,6 +77,9 @@ public class ROLearner2 {
 	private int nrOfNegativeExamples;
 	private Set<Individual> negativeExamples;
 
+	private double bestCurrentlyAccuracy = 0;
+	private int currentlyMaxExpansion = 0;
+	
 	// noise regulates how many positives can be misclassified and when the
 	// algorithm terminates
 	private double noise = 0.0;
@@ -191,9 +194,9 @@ public class ROLearner2 {
 	private int propernessTestsReasoner = 0;
 	private int propernessTestsAvoidedByShortConceptConstruction = 0;
 	private int propernessTestsAvoidedByTooWeakList = 0;
-	private int conceptTestsTooWeakList = 0;
-	private int conceptTestsOverlyGeneralList = 0;
-	private int conceptTestsReasoner = 0;
+	protected int conceptTestsTooWeakList = 0;
+	protected int conceptTestsOverlyGeneralList = 0;
+	protected int conceptTestsReasoner = 0;
 
 	// time variables
 	private long runtime;
@@ -436,7 +439,10 @@ public class ROLearner2 {
 			// we record when a more accurate node is found and log it
 			if (bestNodeStable.getCovPosMinusCovNeg() < candidatesStable.last()
 					.getCovPosMinusCovNeg()) {
-				String acc = new DecimalFormat( ".00%" ).format((candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
+				
+				bestCurrentlyAccuracy = candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
+				
+				String acc = new DecimalFormat( ".00%" ).format(bestCurrentlyAccuracy);
 				// no handling needed, it will just look ugly in the output
 				logger.info("more accurate ("+acc+") class expression found: " + candidatesStable.last().getConcept().toManchesterSyntaxString(baseURI, prefixes));
 				if(logger.isTraceEnabled()){
@@ -446,10 +452,15 @@ public class ROLearner2 {
 				printBestSolutions(5, false);
 				printStatistics(false);
 				bestNodeStable = candidatesStable.last();
+				
 			}
 
 			// chose best node according to heuristics
 			bestNode = candidates.last();
+			
+			if ((bestNode.getHorizontalExpansion()+1) > currentlyMaxExpansion)
+				currentlyMaxExpansion = bestNode.getHorizontalExpansion()+1;
+				
 			// extend best node
 			newCandidates.clear();
 			// best node is removed temporarily, because extending it can
@@ -1386,6 +1397,20 @@ public class ROLearner2 {
 	
 	public boolean isRunning() {
 		return isRunning;
+	}
+	
+	public NavigableSet<ExampleBasedNode> getCandidatesStable() { 
+		return this.candidatesStable;
+	}
+	
+	
+	public double getCurrentlyBestAccuracy() {
+		return bestCurrentlyAccuracy;
+	}
+	
+	
+	public int getcurrentlyMaxExpansion() {
+		return currentlyMaxExpansion;
 	}
 
 }

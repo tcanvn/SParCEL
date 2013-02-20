@@ -7,9 +7,9 @@ if [[ ( -f $FILE1 ) || ( -f $FILE2 ) ]]; then
 	echo "------------------------------------"
 
 	if [ -f $FILE1 ]; then
-		java -Xmx1G -jar $FILE1 $1
+		java -Xmx4G -jar $FILE1 $1
 	else
-		java -Xmx1G -jar $FILE2 $1
+		java -Xmx4G -jar $FILE2 $1
 	fi
 
 	mv log/interfaces.log "log/"${1##*/}"_"$(date +"%Y%m%d_%H%M")".log"
