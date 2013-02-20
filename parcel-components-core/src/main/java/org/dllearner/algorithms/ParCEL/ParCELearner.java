@@ -454,6 +454,10 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 									this.uncoveredPositiveExamples.toString(), this.baseURI,
 									this.prefix));
 				}
+				
+				logger.info("Total descriptions generated: " + allDescriptions.size()
+						+ ", best description length: "  + getCurrentlyBestDescriptionLength()
+						+ ", max expansion length: " + getMaximumHorizontalExpansion());
 
 				logger.info("Compacted partial definitions:");
 				TreeSet<ParCELExtraNode> compactedDefinitions = (TreeSet<ParCELExtraNode>) this
