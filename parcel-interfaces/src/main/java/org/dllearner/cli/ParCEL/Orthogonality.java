@@ -85,7 +85,7 @@ public class Orthogonality {
 		//--------------------
 		
 		//1. (A and B)
-		classSet.add(expr1);
+		classSet.add(expr1);	//1
 		classSet.add(expr2);
 		conjunction[0] = new OWLObjectIntersectionOfImpl(factory, classSet);
 		
