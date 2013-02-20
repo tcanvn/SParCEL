@@ -20,11 +20,15 @@
 package org.dllearner.algorithms.ocel;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -34,13 +38,10 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
@@ -82,7 +83,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @ComponentAnn(name = "OWL Class Expression Learner", shortName = "ocel", version = 1.2)
-public class OCEL extends AbstractCELA {
+public class OCEL extends AbstractCELA implements OCELMBean {
 	
 //	private OCELConfigurator configurator;
 //
@@ -416,6 +417,17 @@ public class OCEL extends AbstractCELA {
 	
 	@Override
 	public void start() {
+		
+		try {
+			ObjectName workerPoolName = new ObjectName(
+					"org.dllearner.algorithms.ocel.OCELMBean:type=OCELMBean");
+			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+			if (!mbs.isRegistered(workerPoolName))
+				mbs.registerMBean(this, workerPoolName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		algorithm.start();
 	}
 	
@@ -720,5 +732,38 @@ public class OCEL extends AbstractCELA {
 	@Override
 	public long getTotalNumberOfDescriptionsGenerated() {
 		return totalRefinement.getValue();
+	}
+	
+	/*
+	 * bean: 
+	 * 	public long getTotalDescriptions();
+		public int getCurrentlyBestDescriptionLength();
+		public double getCurrentlyBestAccuracy();
+		public int getCurrentlyMaxExpansion();
+	 */
+	
+	@Override
+	public long getTotalDescriptions() {
+		return algorithm.conceptTestsReasoner + 
+			algorithm.conceptTestsOverlyGeneralList + 
+			algorithm.conceptTestsTooWeakList;
+	}
+	
+	
+	@Override
+	public int getCurrentlyBestDescriptionLength() {
+		return algorithm.getBestSolution().getLength();
+	}
+	
+	
+	@Override
+	public double getCurrentlyBestAccuracy() {
+		return algorithm.getCurrentlyBestAccuracy();
+	}
+	
+	
+	@Override
+	public int getCurrentlyMaxExpansion() {
+		return algorithm.getcurrentlyMaxExpansion();
 	}
 }
