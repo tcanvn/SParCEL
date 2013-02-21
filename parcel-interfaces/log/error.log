@@ -1,0 +1,2 @@
+java.lang.ClassCastException: org.dllearner.cli.CLI cannot be cast to org.dllearner.cli.ParCEL.CLI
+	at org.dllearner.cli.ParCEL.CLI.main(CLI.java:271)
