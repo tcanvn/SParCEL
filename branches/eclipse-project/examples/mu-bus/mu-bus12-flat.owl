@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY mu-bus "http://mu-bus.seat.massey.ac.nz#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:mu-bus="http://mu-bus.seat.massey.ac.nz#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Ontology rdf:about="http://mu-bus.seat.massey.ac.nz"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#hasHourValue -->
+
+    <DatatypeProperty rdf:about="&mu-bus;hasHourValue">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#hasMinuteValue -->
+
+    <DatatypeProperty rdf:about="&mu-bus;hasMinuteValue">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isChristmasBreak -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isChristmasBreak">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isHoliday1 -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isHoliday1">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isHoliday2 -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isHoliday2">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isMidYearBreak1 -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isMidYearBreak1">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isMidYearBreak2 -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isMidYearBreak2">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isSemester1 -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isSemester1">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isSemester2 -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isSemester2">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isSemesterBreak -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isSemesterBreak">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isSummerSemester -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isSummerSemester">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#isWeekday -->
+
+    <DatatypeProperty rdf:about="&mu-bus;isWeekday">
+        <rdfs:domain rdf:resource="&mu-bus;Activity"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#Activity -->
+
+    <Class rdf:about="&mu-bus;Activity"/>
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#BusOperation -->
+
+    <Class rdf:about="&mu-bus;BusOperation">
+        <rdfs:subClassOf rdf:resource="&mu-bus;Activity"/>
+    </Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://mu-bus.seat.massey.ac.nz#bus1 -->
+
+    <NamedIndividual rdf:about="&mu-bus;bus1">
+        <rdf:type rdf:resource="&mu-bus;BusOperation"/>
+        <mu-bus:isMidYearBreak1 rdf:datatype="&xsd;boolean">false</mu-bus:isMidYearBreak1>
+        <mu-bus:isMidYearBreak2 rdf:datatype="&xsd;boolean">false</mu-bus:isMidYearBreak2>
+        <mu-bus:isChristmasBreak rdf:datatype="&xsd;boolean">false</mu-bus:isChristmasBreak>
+        <mu-bus:isHoliday2 rdf:datatype="&xsd;boolean">false</mu-bus:isHoliday2>
+        <mu-bus:isSemester1 rdf:datatype="&xsd;boolean">false</mu-bus:isSemester1>
+        <mu-bus:isSummerSemester rdf:datatype="&xsd;boolean">false</mu-bus:isSummerSemester>
+        <mu-bus:isSemester2 rdf:datatype="&xsd;boolean">false</mu-bus:isSemester2>
+        <mu-bus:isHoliday1 rdf:datatype="&xsd;boolean">false</mu-bus:isHoliday1>
+        <mu-bus:isSemesterBreak rdf:datatype="&xsd;boolean">true</mu-bus:isSemesterBreak>
+        <mu-bus:isWeekday rdf:datatype="&xsd;boolean">true</mu-bus:isWeekday>
+    </NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.2.1785) http://owlapi.sourceforge.net -->
+
