@@ -260,7 +260,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 *            Description to be calculated
 	 * @return
 	 */
-	public ParCELEvaluationResult getAccuracyAndCorrectness2(Description description) {
+	public ParCELEvaluationResult getAccuracyAndCorrectness21(Description description) {
 
 		int notCoveredNeg = 0;
 		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
@@ -317,6 +317,74 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 
 	}
 
+	
+	/**
+	 * In this accuracy calculation, the accuracy value is based on the current uncovered positive
+	 * examples but the covered positive examples returned still takes all positive examples into
+	 * account
+	 * 
+	 * @param description
+	 *            Description to be calculated
+	 * @return
+	 */
+	public ParCELEvaluationResult getAccuracyAndCorrectness2(Description description, double noise) {
+
+		int notCoveredNeg = 0;
+		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
+
+		// create a new set which contains all members of the uncovered positive examples
+		Set<Individual> localUncoveredPositiveExamples = null;
+
+		if (this.uncoveredPositiveExamples != null) {
+			synchronized (this.uncoveredPositiveExamples) {
+				localUncoveredPositiveExamples = new HashSet<Individual>(
+						this.uncoveredPositiveExamples);
+			}
+		} else
+			localUncoveredPositiveExamples = new HashSet<Individual>(this.positiveExamples);
+
+		int originalNoOfUncoveredPositiveExamples = localUncoveredPositiveExamples.size();
+
+		// calculate the covered positive examples, we do
+		for (Individual example : positiveExamples) {
+			if (reasoner.hasType(description, example))
+				coveredPositiveExamples.add(example);
+		}
+
+		int noOfUpdatedCoveredPositiveExamples = localUncoveredPositiveExamples.size();
+		localUncoveredPositiveExamples.removeAll(coveredPositiveExamples);
+		noOfUpdatedCoveredPositiveExamples -= localUncoveredPositiveExamples.size();
+
+		if (noOfUpdatedCoveredPositiveExamples > 0) {
+			notCoveredNeg = negativeExamples.size()
+					- getNumberOfCoveredNegativeExamples(description);
+
+			double correctness = (double) notCoveredNeg / (double) negativeExamples.size();
+			
+			double completeness = (double) coveredPositiveExamples.size() / positiveExamples.size();
+
+			// double accuracy = (positiveExamples.size() - notCoveredPos +
+			// notCoveredNeg)/(double)(positiveExamples.size() + negativeExamples.size());
+			double accuracy = (noOfUpdatedCoveredPositiveExamples + notCoveredNeg)
+					/ (double) (originalNoOfUncoveredPositiveExamples + negativeExamples.size());
+			// accuracy = (covered positive examples + not covered negative examples) / all examples
+			// (completeness + correctness)
+
+			if (correctness < 1.0d - noise)
+				coveredPositiveExamples = null;
+
+			return new ParCELEvaluationResult(accuracy, correctness, completeness,
+					coveredPositiveExamples);
+
+		} else {
+			// a node will be considered as "weak" if it covers none of the positive example and
+			// the accuracy will be assigned -1
+			return new ParCELEvaluationResult(-1, 0, 0);
+		}
+
+	}
+	
+	
 	/**
 	 * In this accuracy calculation, positive examples covered by a new partial definition will be
 	 * remove from all further calculations

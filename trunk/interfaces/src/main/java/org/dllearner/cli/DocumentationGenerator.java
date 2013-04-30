@@ -44,7 +44,7 @@ public class DocumentationGenerator {
 	private ComponentManager cm;
 	
 	public DocumentationGenerator() {
-		cm = ComponentManager.getInstance();
+		cm = ComponentManager.getInstance(); 
 	}
 	
 	/**

@@ -200,7 +200,8 @@ public class ParCELWorkerExV2 implements Runnable {
 						else {						
 							//PARTIAL DEFINITION
 							if (newNode.getCorrectness() == 1.0d) {
-								newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+								//newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+								newNode.setGenerationTime(learner.getTotalDescriptions());
 								newNode.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_DIRECT_REFINED);	//1
 								newPartialDefinitions.add(newNode);
 							}

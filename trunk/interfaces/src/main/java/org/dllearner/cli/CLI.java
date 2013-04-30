@@ -62,7 +62,7 @@ public class CLI {
 	private File confFile;
 	
 	private LearningAlgorithm algorithm;
-	private KnowledgeSource knowledgeSource;
+	private KnowledgeSource knowledgeSource; 
 	
 	// some CLI options
 	private boolean writeSpringConfiguration = false;

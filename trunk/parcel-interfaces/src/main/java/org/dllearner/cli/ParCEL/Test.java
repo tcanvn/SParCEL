@@ -1,9 +1,20 @@
 package org.dllearner.cli.ParCEL;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.utilities.statistics.Stat;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.DLExpressivityChecker;
 
 public class Test {
 	
@@ -48,5 +59,7 @@ public class Test {
 			this.value  = 0;
 		}
 	}
+	
+	
 	
 }

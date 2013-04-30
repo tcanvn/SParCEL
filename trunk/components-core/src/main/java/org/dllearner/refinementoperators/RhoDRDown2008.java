@@ -1538,7 +1538,7 @@ public class RhoDRDown2008 extends RefinementOperatorAdapter {
 		}
 		splits.put(dp, splitsDP);
 
-		//System.out.println(values);
+		System.out.println(dp + ", no. of values: " + nrOfValues + ", splits: " + maxNrOfSplits);
 		//System.out.println(splits);
 		//System.exit(0);
 	}

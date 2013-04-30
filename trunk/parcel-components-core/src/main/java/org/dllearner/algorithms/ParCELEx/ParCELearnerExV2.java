@@ -297,7 +297,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 			}			
 			else {	//no splitter provided
 				//i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1);
+				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1, maxNoOfSplits);
 			}
 						
 			refinementOperatorPool.getFactory().setUseDisjunction(false);
@@ -446,6 +446,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		//try to combine descriptions in the search tree with the counter partial 
 		//definition to find more partial definition
 		//-----------------------------------------------------------------------
+		/*
 		synchronized (this.searchTree) {
 
 			if (logger.isInfoEnabled())
@@ -490,6 +491,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				logger.info(newPartialDefCount + " new partial definition found");
 			
 		}	//synch search tree
+		*/
 
 		
 		//-------------------------------
@@ -605,7 +607,8 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				if (logger.isTraceEnabled()) {
 					logger.trace("(+) PARTIAL definition found: " + def.getDescription().toManchesterSyntaxString(baseURI, prefix) +
 							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
-							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size() 
+							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size() +
+							", des:" + def.getGenerationTime()
 							);					
 				}
 				else if (logger.isDebugEnabled())

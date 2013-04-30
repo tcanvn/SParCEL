@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ParCEL.ParCELAbstract;
 import org.dllearner.algorithms.ParCEL.ParCELExtraNode;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
+import org.dllearner.algorithms.ParCELEx.ParCELExAbstract;
 import org.dllearner.algorithms.celoe.CELOE; 
 import org.dllearner.algorithms.celoe.CELOE.PartialDefinition;
 import org.dllearner.cli.CrossValidation;
@@ -797,7 +798,7 @@ public class ParCELFortifiedCrossValidation2Phases extends CrossValidation {
 					//jaccard
 					//---------
 					//System.out.print("jaccard...");
-					double jaccardDistance = Orthogonality.jaccardDistance(concept, cpdef);		//calculate jaccard distance between the learned concept and the cpdef	
+					double jaccardDistance = Orthogonality.jaccardDistance_old(concept, cpdef);		//calculate jaccard distance between the learned concept and the cpdef	
 					
 					//count the jaccard values, for stat purpose
 					long tmp_key = Math.round(jaccardDistance * 1000);
@@ -820,9 +821,9 @@ public class ParCELFortifiedCrossValidation2Phases extends CrossValidation {
 					fortCp.removeAll(rs.hasType(concept, fortificationTrainingPos));
 					fortCn.removeAll(rs.hasType(concept, fortificationTrainingNeg));
 					
-					double fortificationTrainingScore = Orthogonality.fortificationScore(pelletReasoner, cpdef, concept, 
+					double fortificationTrainingScore = FortificationUtils.fortificationScore(pelletReasoner, cpdef, concept, 
 							cp, cn, fortificationTrainingPos.size(), fortificationTrainingNeg.size(), 
-							cp-fortCp.size(), cn-fortCn.size());
+							cp-fortCp.size(), cn-fortCn.size(), ((ParCELExAbstract)la).getMaximumHorizontalExpansion());
 					
 					
 					//--------------
@@ -1863,7 +1864,7 @@ public class ParCELFortifiedCrossValidation2Phases extends CrossValidation {
 				+ ", jaccard=" + df.format(cpdef.getAdditionValue(2))				
 				+ ", fort_training_score(cn_test)=" + df.format(cpdef.getAdditionValue(3))
 				+ ", simAll=" + df.format(cpdef.getAdditionValue(4))
-				+ ", simPos=" + df.format(cpdef.getAdditionValue(5))
+				+ ", simPos=" + df.format(cpdef.getAdditionValue(5)) 
 				+ ", simNeg=" + df.format(cpdef.getAdditionValue(6))
 				+ ")"; 
 				

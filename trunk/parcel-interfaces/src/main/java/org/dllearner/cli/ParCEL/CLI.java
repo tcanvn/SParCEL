@@ -12,14 +12,17 @@ import java.util.Set;
 
 
 import org.apache.xmlbeans.XmlObject;
+import org.dllearner.algorithms.ParCEL.ParCELAbstract;
+import org.dllearner.algorithms.ParCEL.ParCELDefaultHeuristic;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
 import org.dllearner.cli.CrossValidation;
 import org.dllearner.algorithms.ParCEL.ParCELReducer;
 import org.dllearner.cli.ParCEL.CELOEFortifiedCrossValidation3PhasesFair;
 import org.dllearner.cli.ParCEL.ParCELCrossValidation;
 import org.dllearner.cli.ParCEL.ParCELExFortifiedCrossValidation3Phases;
-import org.dllearner.cli.ParCEL.ParCELFortifiedCrossValidation2PhasesFair;
+import org.dllearner.cli.ParCEL.ParCELFortifiedCrossValidation3PhasesFair;
 import org.dllearner.algorithms.ParCELEx.ParCELExAbstract;
+import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -143,8 +146,14 @@ public class CLI {
 			try {
 				ParCELPosNegLP lp = context.getBean(ParCELPosNegLP.class);		
 
-				logger.info("\\\\-----------------------------------\n\\\\" + nrOfFolds + 
-						" folds\n\\\\-----------------------------------");
+				ParCELDefaultHeuristic h = new ParCELDefaultHeuristic();
+				
+				logger.info("\\\\-----------------------------------\n\\\\" + nrOfFolds + " folds "
+						+ "\n\\\\ timeout: " + ((ParCELAbstract)la).getMaxExecutionTimeInSeconds() 
+						+ "\n\\\\ heuristic: length penalty=" + h.getExpansionPenaltyFactor() 
+						+ ", accGainBonus=" + h.getGainBonusFactor()
+						+ ", accAward=" + h.getAccuracyAwardFactor()
+						+ "\n\\\\-----------------------------------");
 
 				//---------------------------
 				//with FORTIFICATION
@@ -155,7 +164,7 @@ public class CLI {
 					if (la instanceof ParCELExAbstract)
 						new ParCELExFortifiedCrossValidation3Phases(la, lp, rs, nrOfFolds, false, noOfRuns);
 					else 
-						new ParCELFortifiedCrossValidation2PhasesFair(la, lp, rs, nrOfFolds, 
+						new ParCELFortifiedCrossValidation3PhasesFair(la, lp, rs, nrOfFolds, 
 								false, noOfRuns, fortificationTimeout, fairComparison);
 				}
 				
@@ -185,9 +194,15 @@ public class CLI {
 				
 				//int noOfFolds[] = {4, 5, 8, 10};
 				//int noOfFolds[] = {10};
-				//for (int f=0; f < noOfFolds.length; f++) {				
-					logger.info("\\\\-----------------------------------\n\\\\" + nrOfFolds + 
-							" folds\n\\\\-----------------------------------");
+				//for (int f=0; f < noOfFolds.length; f++) {
+				OEHeuristicRuntime h = new OEHeuristicRuntime();
+				
+				logger.info("\\\\-----------------------------------\n\\\\" + nrOfFolds + " folds "
+						+ "\n\\\\ timeout: " + ((org.dllearner.algorithms.celoe.CELOE)la).getMaxExecutionTimeInSeconds() 
+						+ "\n\\\\ heuristic: expansionPenalty=" + h.getExpansionPenaltyFactor() 
+						+ ", accGainBonus=" + h.getGainBonusFactor()
+						+ ", refinementPenalty=" + h.getNodeRefinementPenalty()
+						+ "\n\\\\-----------------------------------");
 					//new CELOEFortifiedCrossValidationBlind(la, lp, rs, noOfFolds[f], false, noOfRuns);
 					
 					
@@ -208,13 +223,12 @@ public class CLI {
 		//no cross validation
 		} else {
 			
-			for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
+			for(Entry<String, LearningAlgorithm> entry :  context.getBeansOfType(LearningAlgorithm.class).entrySet()){
 				algorithm = entry.getValue();
 				logger.info("Running algorithm instance \"" + entry.getKey() + "\" (" + algorithm.getClass().getSimpleName() + ")");
 				algorithm.start();
 			}
 
-			
 		}
 
     }

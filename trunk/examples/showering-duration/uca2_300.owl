@@ -25,7 +25,7 @@
 <!-- import the base ontology (ABD) -->
 <owl:Ontology rdf:about="">
      
-    	<owl:imports rdf:resource="file:../examples/showering-duration/abd.muse.massey.ac.nz.owl"/>
+    	<owl:imports rdf:resource="file:../examples/showering-duration/abd.muse.massey.ac.nz_simple.owl"/>
       
 </owl:Ontology>
 

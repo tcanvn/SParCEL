@@ -52,7 +52,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
-
+ 
 /**
  * Contains mappings from component classes to strings.
  * Developer please edit the buildMappings() function to add new 

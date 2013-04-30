@@ -162,7 +162,7 @@ public class Enrichment {
 		
 		// we only store the algorithm class and not the learning algorithm object,
 		// since otherwise we run into memory problems for full enrichment
-		private Class<? extends LearningAlgorithm> algorithm;
+		private Class<? extends LearningAlgorithm> algorithm; 
 		private List<EvaluatedAxiom> axioms;
 		private Map<ConfigOption,Object> parameters;
 

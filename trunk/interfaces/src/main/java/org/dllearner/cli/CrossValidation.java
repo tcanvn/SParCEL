@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -51,7 +52,7 @@ import org.dllearner.utilities.Files;
 public class CrossValidation {
 
 	// statistical values
-	protected Stat runtime;
+	protected Stat runtime; 
 	protected Stat accuracy;
 	protected Stat length;	
 	protected Stat fMeasure;
@@ -69,6 +70,7 @@ public class CrossValidation {
 	protected Stat testingCorrectnessStat;
 	
 	protected Stat totalNumberOfDescriptions;
+	protected Stat minimalDescriptionNeeded;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -97,10 +99,10 @@ public class CrossValidation {
 		// get examples and shuffle them too
 		Set<Individual> posExamples = ((PosNegLP) lp).getPositiveExamples();
 		List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
-		Collections.shuffle(posExamplesList, new Random(1));
+		//Collections.shuffle(posExamplesList, new Random(1));
 		Set<Individual> negExamples = ((PosNegLP) lp).getNegativeExamples();
 		List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
-		Collections.shuffle(negExamplesList, new Random(2));
+		//Collections.shuffle(negExamplesList, new Random(2));
 
 		// sanity check whether nr. of folds makes sense for this benchmark
 		if (!leaveOneOut && (posExamples.size() < folds && negExamples.size() < folds)) {
@@ -220,6 +222,9 @@ public class CrossValidation {
 			fMeasureTraining = new Stat();
 			fMeasure = new Stat();
 			totalNumberOfDescriptions = new Stat();
+			
+			minimalDescriptionNeeded = new Stat();
+			
 
 			// run the algorithm
 			for (int currFold = 0; currFold < folds; currFold++) {
@@ -331,8 +336,13 @@ public class CrossValidation {
 				outputWriter("  F-Measure on training set: " + df.format(fMeasureTrainingFold));
 				outputWriter("  F-Measure on testing set: " + df.format(fMeasureTestingFold));
 				outputWriter("  length: " + df.format(concept.getLength()));
-				outputWriter("  runtime: " + df.format(algorithmDuration / (double) 1000000000)	+ "s");				
+				outputWriter("  runtime: " + df.format(algorithmDuration / (double) 1000000000)	+ "s");	
 				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated());
+				
+				if (la instanceof CELOE) {
+					outputWriter("   minimal number of descriptions needed: " + ((CELOE)la).getSearchtreeSizeForBestDescription());
+					minimalDescriptionNeeded.addNumber(((CELOE)la).getSearchtreeSizeForBestDescription());					
+				}				
 				
 				outputWriter("----------");
 				outputWriter("Aggregate data from fold 0 to fold " + currFold);
@@ -341,12 +351,17 @@ public class CrossValidation {
 				outputWriter("  length: " + statOutput(df, length, ""));
 				outputWriter("  F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 				outputWriter("  F-Measure: " + statOutput(df, fMeasure, "%"));
-				outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") + 
-						" -- correctness: " + statOutput(df, trainingCorrectnessStat, "%") +
-						"-- completeness: " + statOutput(df, trainingCompletenessStat, "%"));
-				outputWriter("  predictive accuracy on testing set: " + statOutput(df, accuracy, "%") +
-						" -- correctness: " + statOutput(df, testingCorrectnessStat, "%") +
-						"-- completeness: " + statOutput(df, testingCompletenessStat, "%"));
+				outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%")); 
+				outputWriter("    correctness: " + statOutput(df, trainingCorrectnessStat, "%"));
+				outputWriter("    completeness: " + statOutput(df, trainingCompletenessStat, "%"));
+				outputWriter("  predictive accuracy on testing set: " + statOutput(df, accuracy, "%"));
+				outputWriter("    correctness: " + statOutput(df, testingCorrectnessStat, "%"));
+				outputWriter("    completeness: " + statOutput(df, testingCompletenessStat, "%"));
+				
+				if (la instanceof CELOE) {
+					outputWriter("   minimal number of descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));								
+				}
+				
 				outputWriter("----------");
 				//sleep after each run (fer MBean collecting information purpose)
 				try {

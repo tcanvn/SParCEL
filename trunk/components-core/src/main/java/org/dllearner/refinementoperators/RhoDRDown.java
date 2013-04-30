@@ -162,7 +162,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	// splits for double datatype properties in ascening order
-	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
+	private Map<DatatypeProperty,List<Double>> splits = null; 
 	private int maxNrOfSplits = 10;
 	
 	// data structure for a simple frequent pattern matching preprocessing phase
@@ -357,11 +357,26 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		dataValueFrequency.clear();// = null;
 		
 //		System.out.println("freqDataValues: " + frequentDataValues);
+		// compute splits for double datatype properties
+		if (this.splits == null) {
+			splits = new TreeMap<DatatypeProperty,List<Double>>();
+			for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) 			
+				computeSplits(dp);
+			
+			if (logger.isInfoEnabled()) {
+				logger.info("[RhoDRDown] Uses original split strategy: " + splits);
+			}			
+		}
+		else {
+			if (logger.isInfoEnabled()) {
+				logger.info("[RhoDRDown] Splitter provided: " + splits);
+			}
+		}
 		
 		// compute splits for double datatype properties
-		for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) {
-			computeSplits(dp);
-		}
+		//for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) {
+		//	computeSplits(dp);
+		//}
 		
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
@@ -1042,12 +1057,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		if(useDoubleDatatypes) {
 			Set<DatatypeProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
 			for(DatatypeProperty dp : doubleDPs) {
-				if(splits.get(dp).size()>0) {
-					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
-					DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
-					m3.add(new DatatypeSomeRestriction(dp,max));
-					m3.add(new DatatypeSomeRestriction(dp,min));
-				}
+				
+
+					if (splits.get(dp) != null && splits.get(dp).size()>0) {
+						DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
+						DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
+						m3.add(new DatatypeSomeRestriction(dp,max));
+						m3.add(new DatatypeSomeRestriction(dp,min));
+					}
+				
 			}
 		}		
 		
@@ -1181,7 +1199,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 //			System.out.println("mgdd " + mgdd);
 			
 			for(DatatypeProperty dp : doubleDPs) {
-				if(splits.get(dp).size() > 0) {
+				if(splits.get(dp) != null && splits.get(dp).size() > 0) {
 					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
 					DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
 					m3.add(new DatatypeSomeRestriction(dp,max));
@@ -1539,6 +1557,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	}
 	
 	private void computeSplits(DatatypeProperty dp) {
+		
 		Set<Double> valuesSet = new TreeSet<Double>();
 //		Set<Individual> individuals = rs.getIndividuals();
 		Map<Individual,SortedSet<Double>> valueMap = reasoner.getDoubleDatatypeMembers(dp);
@@ -1563,6 +1582,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			splitsDP.add(value);
 		}
 		splits.put(dp, splitsDP);
+		
+		if (splitsDP.size() > 0 && logger.isInfoEnabled())
+			logger.info("Splitting: " + dp + ", no of values: " + values.size()
+					+ ", splits: " + splitsDP.size());
 		
 //		System.out.println(values);
 //		System.out.println(splits);
@@ -1721,6 +1744,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	public void setMaxNrOfSplits(int maxNrOfSplits) {
 		this.maxNrOfSplits = maxNrOfSplits;
 	}
+
+	public Map<DatatypeProperty, List<Double>> getSplits() {
+		return splits;
+	}
+
+	public void setSplits(Map<DatatypeProperty, List<Double>> splits) {
+		this.splits = splits;
+	}
+
 	
 	
 }

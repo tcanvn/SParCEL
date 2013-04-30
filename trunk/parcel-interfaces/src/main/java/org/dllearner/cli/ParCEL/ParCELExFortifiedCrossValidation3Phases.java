@@ -1,8 +1,6 @@
 package org.dllearner.cli.ParCEL;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -20,7 +17,6 @@ import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
 import org.dllearner.algorithms.ParCELEx.ParCELExAbstract;
 import org.dllearner.algorithms.celoe.CELOE; 
 import org.dllearner.cli.CrossValidation;
-import org.dllearner.cli.ParCEL.Orthogonality.FortificationResult;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -30,9 +26,7 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -163,10 +157,10 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 		// get examples and shuffle them too
 		Set<Individual> posExamples = lp.getPositiveExamples();
 		List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
-		Collections.shuffle(posExamplesList, new Random(1));			
+		//Collections.shuffle(posExamplesList, new Random(1));			
 		Set<Individual> negExamples = lp.getNegativeExamples();
 		List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
-		Collections.shuffle(negExamplesList, new Random(2));
+		//Collections.shuffle(negExamplesList, new Random(2));
 		
 		String baseURI = rs.getBaseURI();
 		Map<String, String> prefixes = rs.getPrefixes();
@@ -193,15 +187,6 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 		int[] splitsPos = calculateSplits(posExamples.size(),folds);
 		int[] splitsNeg = calculateSplits(negExamples.size(),folds);
 		
-		
-		//for orthogonality check
-		long orthAllCheckCount[] = new long[5];
-		orthAllCheckCount[0] = orthAllCheckCount[1] = orthAllCheckCount[2] = orthAllCheckCount[3] = orthAllCheckCount[4] = 0;
-		
-		long orthSelectedCheckCount[] = new long[5];
-		orthSelectedCheckCount[0] = orthSelectedCheckCount[1] = orthSelectedCheckCount[2] = orthSelectedCheckCount[3] = orthSelectedCheckCount[4] = 0;
-		
-	
 
 		//System.out.println(splitsPos[0]);
 		//System.out.println(splitsNeg[0]);
@@ -432,16 +417,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			completenessLabelFortifyStat = new Stat();
 			fmeasureLabelFortifyStat = new Stat();
 			
-			
-
-			//fortification strategies								
-			String[] strategyNames = {"TRAINING COVERAGE", "JACCARD OVERLAP", "JACCARD DISJOIN", "FORTIFICATION TRAINING", "SIMILARITY-ALL", "SIMILARITY-NEG_POS"};
-			
-			//constants used to index the fortification strategies in the result array 
-			final int TRAINING_COVERAGE_INDEX = 0, JACCARD_OVERLAP_INDEX = 1, JACCARD_DISJOIN_INDEX = 2,
-					FORTIFICATION_TRANING_INDEX = 3, SIMILARITY_ALL_INDEX = 4, SIMILARITY_POS_NEG_INDEX = 5;
-			
-			int noOfStrategies = strategyNames.length;
+		
+			int noOfStrategies = FortificationUtils.strategyNames.length;
 			
 			
 			//fortification accuracy
@@ -462,7 +439,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			}
 			
 			//number of cpdef corresponding to 5%, 10%, ..., 50% (for stat.)
-			noOfCpdefUsedMultiStepFortStat = new Stat[6];
+			noOfCpdefUsedMultiStepFortStat = new Stat[noOfStrategies];
 			for (int i=0; i<6; i++)
 				noOfCpdefUsedMultiStepFortStat[i] = new Stat();
 				
@@ -542,7 +519,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				noOfCpdefUsedStat.addNumber(noOfUsedCpdef);
 				
 				//pdef: some stat information
-				Set<ParCELExtraNode> partialDefinitions = parcelEx.getReducedPartialDefinition();
+				//Set<ParCELExtraNode> partialDefinitions = parcelEx.getReducedPartialDefinition();
 				long noOfPdef = parcelEx.getNumberOfPartialDefinitions();
 				long noOfUsedPdef = parcelEx.getNoOfReducedPartialDefinition();
 				double avgPdefLength = concept.getLength() / (double)noOfUsedPdef;
@@ -562,7 +539,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				//get the COUNTER PARTIAL DEFINITIONs
 				//--------------------------------------
 				//sorted by training coverage by default
-				TreeSet<CELOE.PartialDefinition> counterPartialDefinitions = new TreeSet<CELOE.PartialDefinition>(new CoverageComparator2());
+				TreeSet<CELOE.PartialDefinition> counterPartialDefinitions = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.CoverageComparator());
 
 				//-------------------------------
 				//training sets
@@ -619,7 +596,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					//(note that the positive and negative examples are swapped)
 					for (ParCELExtraNode cpdef : ((ParCELExAbstract)la).getPartialDefinitions()) {
 						
-						int trainingCp = cpdef.getCoveredPositiveExamples().size();	//
+						int trainingCp = cpdef.getCoveredPositiveExamples().size();	//positive examples of cpdef is the 
 								
 						counterPartialDefinitions.add(new CELOE.PartialDefinition(new Negation(cpdef.getDescription()), trainingCp));		
 						
@@ -641,27 +618,6 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 
 				}				
 
-
-				
-				
-
-				
-				/*				 
-				//display the cpdef and their coverage 
-				outputWriter("(CPDEF length and coverage (length, coverage)");
-				int count = 1;
-				String sTemp = "";
-				
-				for (ParCELExtraNode cpdef : counterPartialDefinitions) {
-					sTemp += ("(" + cpdef.getDescription().getLength() + ", " + 
-							df.format(cpdef.getCoveredNegativeExamples().size()/(double)trainingNegSize) + "); ");
-					if (count % 10 == 0) {
-						outputWriter(sTemp);
-						sTemp = "";
-					}
-					count++;
-				}
-				*/
 				
 				outputWriter("------------------------------");
 				
@@ -697,6 +653,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				double currFmeasureTraining = 100 * Heuristics.getFScore(recallTraining, precisionTraining);
 				fMeasureTraining.addNumber(currFmeasureTraining);
 
+				
 
 				//----------------------
 				//TEST accuracy
@@ -737,26 +694,14 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				
 				fMeasure.addNumber(currFmeasureTest);
 				
+								
+				//==================================================
+				//FORTIFICATION
+				//==================================================	
 
-				//---------------------------------------
-				// FORTIFICATION 				
-				//---------------------------------------
-
-				FortificationResult[] multiStepFortificationResult = new FortificationResult[noOfStrategies];
+				FortificationUtils.FortificationResult[] multiStepFortificationResult = new FortificationUtils.FortificationResult[noOfStrategies];
 				
 
-				
-				//check the f-measure, accuracy, completeness, correctness calculations between the methods 
-				//	Orthogonality.fortifyAccuracyMultiSteps and inside this class
-				
-				/*
-				outputWriter("********* check the calculation ***************");
-				outputWriter("fmeasure: " + currFmeasureTest+ " // " + multiStepFortificationCoverage.fortificationFmeasure[0]);
-				outputWriter("accuracy: " + currAccuracy + " // " + multiStepFortificationCoverage.fortificationAccuracy[0]);
-				outputWriter("correctness: " + testingCorrectness + " // " + multiStepFortificationCoverage.fortificationCorrectness[0]);
-				outputWriter("comleteness: " + testingCompleteness + " // " + multiStepFortificationCoverage.fortificationCompleteness[0]);
-				*/
-				
 				
 				//---------------------------------
 				// Fortification - ALL CPDEFs
@@ -776,12 +721,13 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				Set<Individual> cpdefNegativeCovered = new HashSet<Individual>();
 				
 				long totalCPDefLength = 0;
-				
-				//some variables for Jaccard statistical info
-				int c = 1;
-				Map<Long, Integer> jaccardValueCount = new TreeMap<Long, Integer>();
 
+				
+				//---------------------------------------------------
 				//variables for fortification training
+				//---------------------------------------------------
+				
+				//fortification validation (FV) dataset
 				Set<Individual> fortificationTrainingPos = fortificationSetsPos.get(currFold);
 				Set<Individual> fortificationTrainingNeg= fortificationSetsNeg.get(currFold);
 				
@@ -790,30 +736,26 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				allFortificationExamples.addAll(fortificationTrainingPos);
 				allFortificationExamples.addAll(fortificationTrainingNeg);	//duplicate will be remove automatically
 				
-				ConceptSimilarity similarityCheckerAll = new ConceptSimilarity(rs, allFortificationExamples);
-				ConceptSimilarity similarityCheckerPos= new ConceptSimilarity(rs, fortificationTrainingPos);
-				ConceptSimilarity similarityCheckerNeg = new ConceptSimilarity(rs, fortificationTrainingNeg);
 				
+				//New Jaccard Similarity
+				JaccardSimilarity newJaccardSimilarity = new JaccardSimilarity(pelletReasoner);				
+
 		
-				//start the BLIND fortification and calculate the scores
+				///------------------------------------------------------------
+				//start the BLIND fortification and 
+				// 	calculate the scores for other methods (use a common loop)
+				//------------------------------------------------------------
 				int tmp_id = 1;
+				int count = 1;
 				for (CELOE.PartialDefinition negCpdef : counterPartialDefinitions) {
 					
+					//in parcelEx, the cpdefs are negated by default ==> remove negation before process them
 					Description cpdef = negCpdef.getDescription().getChild(0);
 					
 					//assign id for cpdef for debugging purpose
 					negCpdef.setId("#" + tmp_id++);
 
-					//--------------------
-					//Orthogonality check
-					//--------------------
-					//int orthoCheck = Orthogonality.orthogonalityCheck(pelletReasoner, ontology, concept, cpdef.getDescription());
-					int orthoCheck = 0;	//currently, disable this value as the reasoner often gets stuck in checking the satisfiability
-					
-					//count ortho check values for stat purpose
-					orthAllCheckCount[orthoCheck]++;
-					
-					
+
 					//--------------------
 					//BLIND fortification
 					//--------------------
@@ -822,70 +764,97 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					Set<Individual> cpdefCp = rs.hasType(cpdef, curFoldPosTestSet);
 					Set<Individual> cpdefCn = rs.hasType(cpdef, curFoldNegTestSet);
 					
-
-					//-----------------
-					//JACCARD distance
-					//-----------------
-					double jaccardDistance = Orthogonality.jaccardDistance(concept, cpdef);		//calculate jaccard distance between the learned concept and the cpdef	
 					
-					//count the jaccard values, for stat purpose
-					long tmp_key = Math.round(jaccardDistance * 1000);
-					if (jaccardValueCount.containsKey(tmp_key))
-						jaccardValueCount.put(tmp_key, jaccardValueCount.get(tmp_key)+1);					
-					else
-						jaccardValueCount.put(tmp_key, 1);
-					
-					
-					//------------------------
-					//fortification TRAINNING
-					//------------------------
+					//--------------------------------
+					//Fortification Validation (FV)
+					//--------------------------------
 					Set<Individual> fortCp = rs.hasType(cpdef, fortificationTrainingPos);
 					Set<Individual> fortCn = rs.hasType(cpdef, fortificationTrainingNeg);
-					
+
+
+					Set<Individual> conceptCp = rs.hasType(concept, fortificationTrainingPos);
+					Set<Individual> conceptCn = rs.hasType(concept, fortificationTrainingNeg);					
+
 					int cp = fortCp.size();
 					int cn = fortCn.size();
-					
-					//this need to be revised (calculate once)
-					fortCp.removeAll(rs.hasType(concept, fortificationTrainingPos));
-					fortCn.removeAll(rs.hasType(concept, fortificationTrainingNeg));
-					
-					double fortificationTrainingScore = Orthogonality.fortificationScore(pelletReasoner, cpdef, concept, 
+
+					//these are used to compute common instances between cpdef and learnt concept
+					Set<Individual> commonCp = new HashSet<Individual>();
+					Set<Individual> commonCn = new HashSet<Individual>();
+					commonCp.addAll(fortCp);
+					commonCn.addAll(fortCn);
+					commonCp.removeAll(conceptCp);
+					commonCn.removeAll(conceptCn);
+
+					double fortificationValidationScore = FortificationUtils.fortificationScore(pelletReasoner, cpdef, concept, 
 							cp, cn, fortificationTrainingPos.size(), fortificationTrainingNeg.size(), 
-							cp-fortCp.size(), cn-fortCn.size());
+							cp-commonCp.size(), cn-commonCn.size(), ((ParCELExAbstract)la).getMaximumHorizontalExpansion());
+
+					
+					//----------------------------
+					//Overlap + Similarity Score
+					//----------------------------
+					double overlapNeg = FortificationUtils.getConceptOverlapSimple(fortCn, conceptCn);
+					double overlapPos = FortificationUtils.getConceptOverlapSimple(fortCp, conceptCp);
 					
 					
-					//--------------
-					//similarity
-					//--------------
-					double similarityScoreAll = similarityCheckerAll.disjunctiveSimilarityEx(partialDefinitions, cpdef);
-					double similarityScorePos = similarityCheckerPos.disjunctiveSimilarityEx(partialDefinitions, cpdef);
-					double similarityScoreNeg = similarityCheckerNeg.disjunctiveSimilarityEx(partialDefinitions, cpdef);
-					double similarityCombineScore = similarityScoreNeg*1.5 - similarityScorePos*0.5;
+					//---------------
+					//NEW- JACCARD
+					//---------------
+					double newJaccardSimilarityScore = 0;
+					try {
+						newJaccardSimilarityScore = newJaccardSimilarity.getJaccardSimilarityComplex(concept, cpdef);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					double conceptOverlapSimilairtyScore = overlapNeg + newJaccardSimilarityScore;
+
+					double similarityPosNegScore = overlapNeg - 0.5 * overlapPos;
+
 					
 					//---------------------------
-					//assign score for the cpdef
+					//TRAINING COVERAGE Score
 					//---------------------------
-					negCpdef.setAdditionValue(0, orthoCheck);
-					negCpdef.setAdditionValue(1, cpdefCn.size());	//no of neg. examples in test set covered by the cpdef					
-					negCpdef.setAdditionValue(2, jaccardDistance);
-					negCpdef.setAdditionValue(3, fortificationTrainingScore);	
-					negCpdef.setAdditionValue(4, similarityScoreAll);						
-					negCpdef.setAdditionValue(5, similarityScorePos);
-					negCpdef.setAdditionValue(6, similarityScoreNeg);
-					negCpdef.setAdditionValue(7, similarityCombineScore);
+					double trainingCoverageScore = cpdefCn.size()/(double)curFoldNegTrainingSet.size();
+					
+					
+					//----------------------------------				
+					//Assign all scores to the CPDEF
+					//new scoring: 21/4/2013
+					//----------------------------------
+					double allScores = conceptOverlapSimilairtyScore + fortificationValidationScore 
+					+ trainingCoverageScore*0.5;
+					
+					double randomScore = new Random().nextDouble();
+
+					negCpdef.setAdditionValue(0, trainingCoverageScore);		//no of neg. examples in training set covered by the cpdef					
+					negCpdef.setAdditionValue(1, conceptOverlapSimilairtyScore);		//can be used to infer jaccard overlap score
+					negCpdef.setAdditionValue(2, fortificationValidationScore);	//fortification validation strategy
+					negCpdef.setAdditionValue(3, similarityPosNegScore);						
+					negCpdef.setAdditionValue(4, newJaccardSimilarityScore);
+					negCpdef.setAdditionValue(5, allScores);
+					negCpdef.setAdditionValue(6, randomScore);
+
 					
 					//------------------------
 					//BLIND fortification
 					//------------------------
+					boolean cpChanged = cpdefPositiveCovered.addAll(cpdefCp);
+					boolean cnChanged = cpdefNegativeCovered.addAll(cpdefCn);
+					
 					cpdefPositiveCovered.addAll(cpdefCp);
 					cpdefNegativeCovered.addAll(cpdefCn);
 
 					
 					totalCPDefLength += cpdef.getLength();					
 					
-					//print the cpdef which covers some pos. examples
-					//if (cpdefCp.size() > 0)								
-					outputWriter(c++ + ". " + getCpdefString(negCpdef, baseURI, prefixes)
+					String changed = "";
+					if (cpChanged || cnChanged)
+						changed = "(" + (cpChanged?"-":"") + (cnChanged?"+":"") + ")";
+					
+					outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(negCpdef, baseURI, prefixes)
 							+ ", cp=" + rs.hasType(cpdef, curFoldPosTestSet)
 							+ ", cn=" + rs.hasType(cpdef, curFoldNegTestSet));	
 				}
@@ -944,207 +913,255 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				accuracyBlindFortifyStat.addNumber(blindFortificationAccuracy);
 				fmeasureBlindFortifyStat.addNumber(blindFmeasure);
 				
+				//----------------------------------
 				//end of blind fortification
+				//----------------------------------
+				
+				//========================================================
+				// process other fortification strategies (except BLIND)
+				//========================================================
 				
 				
+				
+				
+				int INDEX;
+
 				//---------------------------------------
-				/// Fortification - TRAINGING COVERAGE				
+				/// 1. Fortification - TRAINGING COVERAGE				
 				//---------------------------------------
 				outputWriter("---------------------------------------------");
-				outputWriter("Fortification - TRAINING COVERAGE");
+				outputWriter("Fortification - TRAINGING COVERAGE");
 				outputWriter("---------------------------------------------");
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set 
-				multiStepFortificationResult[TRAINING_COVERAGE_INDEX] = Orthogonality.fortifyAccuracyMultiSteps(
+
+				INDEX = FortificationUtils.TRAINING_COVERAGE_INDEX;
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, counterPartialDefinitions, curFoldPosTestSet, curFoldNegTestSet, true);
-				
-				for (int i=0; i<6; i++) {
-					accuracyPercentageFortifyStepStat[TRAINING_COVERAGE_INDEX][i].
-							addNumber(multiStepFortificationResult[TRAINING_COVERAGE_INDEX].fortificationAccuracy[i+1]);
-					completenessPercentageFortifyStepStat[TRAINING_COVERAGE_INDEX][i].
-							addNumber(multiStepFortificationResult[TRAINING_COVERAGE_INDEX].fortificationCompleteness[i+1]);
-					correctnessPercentageFortifyStepStat[TRAINING_COVERAGE_INDEX][i].
-							addNumber(multiStepFortificationResult[TRAINING_COVERAGE_INDEX].fortificationCorrectness[i+1]);
-					fmeasurePercentageFortifyStepStat[TRAINING_COVERAGE_INDEX][i].
-							addNumber(multiStepFortificationResult[TRAINING_COVERAGE_INDEX].fortificationFmeasure[i+1]);
-				}
-				
-				
-				//-----------------------------------------------------------------------------
-				// JACCARD fortification
-				// use Jaccard score to set the priority for the counter partial definitions
-				//-----------------------------------------------------------------------------
-				outputWriter("---------------------------------------------");
-				outputWriter("Fortification - JACCARD DISJOINT (Distance)");
-				outputWriter("---------------------------------------------");
-				
-				SortedSet<CELOE.PartialDefinition> jaccardDistanceFortificationCpdef = new TreeSet<CELOE.PartialDefinition>(new AdditionalValueComparator(2));
-				jaccardDistanceFortificationCpdef.addAll(counterPartialDefinitions);
-				
-				outputWriter("Jaccard distance cpdef size: " + jaccardDistanceFortificationCpdef.size());
-				
-				//visit all counter partial definitions
-				/*
-				c = 1;
-				for (CELOE.PartialDefinition cpdef : jaccardFortificationCpdef) {
-					outputWriter(c++ + ". " + this.getCpdefString(cpdef)
-							+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
-							+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));					
-				}
-				*/
-				
-				
-				outputWriter("*** Jaccard distance values count:");
-				for (Long value : jaccardValueCount.keySet()) 
-					outputWriter(df.format(value/1000d) + ": " + jaccardValueCount.get(value));
 
-				
-				//calculate jaccard fortification
-				multiStepFortificationResult[JACCARD_DISJOIN_INDEX] = Orthogonality.fortifyAccuracyMultiSteps(
-						rs, concept, jaccardDistanceFortificationCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
-				
-				for (int i=0; i<6; i++) {
-					accuracyPercentageFortifyStepStat[JACCARD_DISJOIN_INDEX][i].
-							addNumber(multiStepFortificationResult[JACCARD_DISJOIN_INDEX].fortificationAccuracy[i+1]);
-					completenessPercentageFortifyStepStat[JACCARD_DISJOIN_INDEX][i].
-							addNumber(multiStepFortificationResult[JACCARD_DISJOIN_INDEX].fortificationCompleteness[i+1]);
-					correctnessPercentageFortifyStepStat[JACCARD_DISJOIN_INDEX][i].	
-							addNumber(multiStepFortificationResult[JACCARD_DISJOIN_INDEX].fortificationCorrectness[i+1]);					
-					fmeasurePercentageFortifyStepStat[JACCARD_DISJOIN_INDEX][i].
-							addNumber(multiStepFortificationResult[JACCARD_DISJOIN_INDEX].fortificationFmeasure[i+1]);
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
 				}
 
-				
-				//-----------------------------------------------------------------------------
-				// JACCARD SCORE (overlap) fortification
-				// Use Jaccard score to set the priority for the counter partial definitions
-				//-----------------------------------------------------------------------------
-				outputWriter("---------------------------------------------");
-				outputWriter("Fortification - JACCARD OVERLAP (Score)");
-				outputWriter("---------------------------------------------");
 
-				//distance = 1 - score ==> sort by distance ascendingly = sort by score descendingly (more overlap to less overlap)
-				SortedSet<CELOE.PartialDefinition> jaccardScoreFortificationCpdef = new TreeSet<CELOE.PartialDefinition>(new AdditionalValueComparator(2, false));	//sort ascendingly
-				jaccardScoreFortificationCpdef.addAll(counterPartialDefinitions);
-				
-				outputWriter("Jaccard score cpdef size: " + jaccardScoreFortificationCpdef.size());
-
-				//calculate jaccard fortification
-				multiStepFortificationResult[JACCARD_OVERLAP_INDEX]= Orthogonality.fortifyAccuracyMultiSteps(
-						rs, concept, jaccardScoreFortificationCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
-				
-				for (int i=0; i<6; i++) {
-					accuracyPercentageFortifyStepStat[JACCARD_OVERLAP_INDEX][i].
-							addNumber(multiStepFortificationResult[JACCARD_OVERLAP_INDEX].fortificationAccuracy[i+1]);
-					completenessPercentageFortifyStepStat[JACCARD_OVERLAP_INDEX][i].
-							addNumber(multiStepFortificationResult[JACCARD_OVERLAP_INDEX].fortificationCompleteness[i+1]);
-					correctnessPercentageFortifyStepStat[JACCARD_OVERLAP_INDEX][i].	
-							addNumber(multiStepFortificationResult[JACCARD_OVERLAP_INDEX].fortificationCorrectness[i+1]);					
-					fmeasurePercentageFortifyStepStat[JACCARD_OVERLAP_INDEX][i].
-							addNumber(multiStepFortificationResult[JACCARD_OVERLAP_INDEX].fortificationFmeasure[i+1]);
-				}
-				
-				
-				//---------------------------------------
-				// Fortification - VALIDATION SET
-				//---------------------------------------	
-
+				//------------------------------------------------
+				/// 2. Fortification - CONCEPT SIMILARITY & OVERLAP				
+				//------------------------------------------------
 				outputWriter("---------------------------------------------");
-				outputWriter("Fortification VALIDATION SET");
+				outputWriter("Fortification - CONCEPT SIMILARITY & OVERLAP");
 				outputWriter("---------------------------------------------");
 
-				
-				SortedSet<CELOE.PartialDefinition> trainingFortificationCpdef = new TreeSet<CELOE.PartialDefinition>(new AdditionalValueComparator(3));
+				INDEX = FortificationUtils.CONCEPT_OVERL_SIM_INDEX;
 
-				trainingFortificationCpdef.addAll(counterPartialDefinitions);
+				SortedSet<CELOE.PartialDefinition> similarityAndOverlapCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(1));
+				similarityAndOverlapCpdef.addAll(counterPartialDefinitions);
 
-				//print the counter partial definitions with score
-				/*
-				c = 1;
-				for (CELOE.PartialDefinition cpdef : trainingFortificationCpdef) {
-					outputWriter(c++ + ". " + this.getCpdefString(cpdef)
-							+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
-							+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
-				}
-				*/
-				
-				//calculate the multi-step fortification accuracy
-				multiStepFortificationResult[FORTIFICATION_TRANING_INDEX] = Orthogonality.fortifyAccuracyMultiSteps(
-						rs, concept, trainingFortificationCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
-				for (int i=0; i<6; i++) {
-					accuracyPercentageFortifyStepStat[FORTIFICATION_TRANING_INDEX][i].
-							addNumber(multiStepFortificationResult[FORTIFICATION_TRANING_INDEX].fortificationAccuracy[i+1]);
-					completenessPercentageFortifyStepStat[FORTIFICATION_TRANING_INDEX][i].
-							addNumber(multiStepFortificationResult[FORTIFICATION_TRANING_INDEX].fortificationCompleteness[i+1]);
-					correctnessPercentageFortifyStepStat[FORTIFICATION_TRANING_INDEX][i].
-							addNumber(multiStepFortificationResult[FORTIFICATION_TRANING_INDEX].fortificationCorrectness[i+1]);						
-					fmeasurePercentageFortifyStepStat[FORTIFICATION_TRANING_INDEX][i].
-							addNumber(multiStepFortificationResult[FORTIFICATION_TRANING_INDEX].fortificationFmeasure[i+1]);
-				}
-				
-				
-				
-				//------------------------------------------
-				// Fortification - SIMILARITY_ALL Examples
-				//------------------------------------------				
-				outputWriter("---------------------------------------------");
-				outputWriter("Fortification - SIMILARITY");
-				outputWriter("---------------------------------------------");
 
-				
-				SortedSet<CELOE.PartialDefinition> similarityFortificationCpdef = new TreeSet<CELOE.PartialDefinition>(new AdditionalValueComparator(4));
-				similarityFortificationCpdef.addAll(counterPartialDefinitions);
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, similarityAndOverlapCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
 
-				
-				//print the counter partial definitions with score
-				/*
-				c = 1;
-				for (CELOE.PartialDefinition cpdef : similarityFortificationCpdef) {
-					outputWriter(c++ + ". " + this.getCpdefString(cpdef)
-							+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
-							+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
-				}
-				*/
-				
-				//calculate the multi-step fortification accuracy
-				multiStepFortificationResult[SIMILARITY_ALL_INDEX] = Orthogonality.fortifyAccuracyMultiSteps(
-						rs, concept, similarityFortificationCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
-				for (int i=0; i<6; i++) {
-					accuracyPercentageFortifyStepStat[SIMILARITY_ALL_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_ALL_INDEX].fortificationAccuracy[i+1]);
-					completenessPercentageFortifyStepStat[SIMILARITY_ALL_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_ALL_INDEX].fortificationCompleteness[i+1]);
-					correctnessPercentageFortifyStepStat[SIMILARITY_ALL_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_ALL_INDEX].fortificationCorrectness[i+1]);						
-					fmeasurePercentageFortifyStepStat[SIMILARITY_ALL_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_ALL_INDEX].fortificationFmeasure[i+1]);
-				}
-								
-				
-				//---------------------------------------
-				// Fortification - SIMILARITY_POS-NEG
-				//---------------------------------------				
-				outputWriter("---------------------------------------------");
-				outputWriter("Fortification - SIMILARITY_POS-NEG");
-				outputWriter("---------------------------------------------");
-
-				
-				SortedSet<CELOE.PartialDefinition> similarityCombineFortificationCpdef = new TreeSet<CELOE.PartialDefinition>(new AdditionalValueComparator(7));
-				similarityCombineFortificationCpdef.addAll(counterPartialDefinitions);
-				
-				//calculate the multi-step fortification accuracy
-				multiStepFortificationResult[SIMILARITY_POS_NEG_INDEX] = Orthogonality.fortifyAccuracyMultiSteps(
-						rs, concept, similarityCombineFortificationCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
-				for (int i=0; i<6; i++) {
-					accuracyPercentageFortifyStepStat[SIMILARITY_POS_NEG_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_POS_NEG_INDEX].fortificationAccuracy[i+1]);
-					completenessPercentageFortifyStepStat[SIMILARITY_POS_NEG_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_POS_NEG_INDEX].fortificationCompleteness[i+1]);
-					correctnessPercentageFortifyStepStat[SIMILARITY_POS_NEG_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_POS_NEG_INDEX].fortificationCorrectness[i+1]);						
-					fmeasurePercentageFortifyStepStat[SIMILARITY_POS_NEG_INDEX][i].
-							addNumber(multiStepFortificationResult[SIMILARITY_POS_NEG_INDEX].fortificationFmeasure[i+1]);
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
 				}
 
+
+				//------------------------------------------------
+				/// 3. Fortification - FORTIFICATION VALIDATION				
+				//------------------------------------------------
+				outputWriter("---------------------------------------------");
+				outputWriter("Fortification - FORTIFICATION VALIDATION");
+				outputWriter("---------------------------------------------");
+
+				INDEX = FortificationUtils.FORTIFICATION_VALIDATION_INDEX;
+
+				SortedSet<CELOE.PartialDefinition> fortificationValidationCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(2));
+				fortificationValidationCpdef.addAll(counterPartialDefinitions);
+
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, fortificationValidationCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
+
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
+				}
+
+
+				//------------------------------------------------
+				/// 4. Fortification - SIMILARITY NEG-POS				
+				//------------------------------------------------
+				outputWriter("---------------------------------------------");
+				outputWriter("Fortification - SIMILARITY NEG-POS");
+				outputWriter("---------------------------------------------");
+
+				INDEX = FortificationUtils.SIMILARITY_POS_NEG_INDEX;
+
+				SortedSet<CELOE.PartialDefinition> similarityNegPosCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(3));
+				similarityNegPosCpdef.addAll(counterPartialDefinitions);
+
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, similarityNegPosCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
+
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
+				}
+
+
+				//------------------------------------------------
+				/// 5. Fortification - JACCARD OVERLAP				
+				//------------------------------------------------
+				outputWriter("---------------------------------------------");
+				outputWriter("Fortification - JACCARD OVERLAP");
+				outputWriter("---------------------------------------------");
+
+				INDEX = FortificationUtils.NEW_JACCARD_OVERLAP_INDEX;
+
+				SortedSet<CELOE.PartialDefinition> jaccardOverlapCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(4));
+				jaccardOverlapCpdef.addAll(counterPartialDefinitions);
+
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, jaccardOverlapCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
+
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
+				}
+
+
+				//------------------------------------------------
+				/// 6. Fortification - JACCARD DISTANCE				
+				//------------------------------------------------
+				outputWriter("---------------------------------------------");
+				outputWriter("Fortification - JACCARD DISTANCE");
+				outputWriter("---------------------------------------------");
+
+				INDEX = FortificationUtils.NEW_JACCARD_DISTANCE_INDEX;
+
+				SortedSet<CELOE.PartialDefinition> jaccardDistanceCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(4, false));
+				jaccardDistanceCpdef.addAll(counterPartialDefinitions);
+
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, jaccardDistanceCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
+
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
+				}
+
+
+
+				//------------------------------------------------
+				/// 7. Fortification - COMBINATION				
+				//------------------------------------------------
+				outputWriter("---------------------------------------------");
+				outputWriter("Fortification - COMBINATION SCORES");
+				outputWriter("---------------------------------------------");
+
+				INDEX = FortificationUtils.CONBINATION_INDEX;
+
+				SortedSet<CELOE.PartialDefinition> combinationScoreCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(5));
+				combinationScoreCpdef.addAll(counterPartialDefinitions);
+
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, combinationScoreCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
+
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
+				}
+
+				
+				//------------------------------------------------
+				/// 7. Fortification - COMBINATION				
+				//------------------------------------------------
+				outputWriter("---------------------------------------------");
+				outputWriter("Fortification - RANDOM");
+				outputWriter("---------------------------------------------");
+
+				INDEX = FortificationUtils.RANDOM_INDEX;
+
+				SortedSet<CELOE.PartialDefinition> randomCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(6));
+				randomCpdef.addAll(counterPartialDefinitions);
+
+
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
+						rs, concept, randomCpdef, curFoldPosTestSet, curFoldNegTestSet, true);
+
+				//accumulate the accuracy, fmeasure,... for the TRAINING_COVERAGE strategy at 5%, 10%, 20%,...
+				for (int i=0; i<6; i++) {	//6: the number of steps: 5%, 10%, 20%,..., 50%
+					accuracyPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationAccuracy[i+1]);
+					completenessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCompleteness[i+1]);
+					correctnessPercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationCorrectness[i+1]);
+					fmeasurePercentageFortifyStepStat[INDEX][i].
+					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
+				}
+				
 				
 				//------------------------------
 				// Fortification - LABEL DATA				
@@ -1164,19 +1181,14 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				 * given a set of wrong classified neg., select a set of cpdef to remove the wrong classified neg examples 
 				 * the cpdef are sorted based on the training neg. example coverage
 				 */
-				TreeSet<CELOE.PartialDefinition> selectedCounterPartialDefinitions = new TreeSet<CELOE.PartialDefinition>(new CoverageComparator2());
+				TreeSet<CELOE.PartialDefinition> selectedCounterPartialDefinitions = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.CoverageComparator());
 
-				outputWriter("---------------------------------------------------------------");
-				outputWriter("BLIND fortification - All counter partial defintions are used");
-				outputWriter("---------------------------------------------------------------");
-
-				
 				if (cnTest.size() > 0) {
 					
-					TreeSet<Individual> tempCoveredNeg = new TreeSet<Individual>(new URIComparator());
+					TreeSet<Individual> tempCoveredNeg = new TreeSet<Individual>(new FortificationUtils.URIComparator());
 					tempCoveredNeg.addAll(cnTest);
 					
-					TreeSet<Individual> tempUncoveredPos = new TreeSet<Individual>(new URIComparator());
+					TreeSet<Individual> tempUncoveredPos = new TreeSet<Individual>(new FortificationUtils.URIComparator());
 					tempUncoveredPos.addAll(upTest);
 					
 					//check each counter partial definitions
@@ -1219,10 +1231,10 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				labelFortifyCpdefTrainingCoverageStat.addNumber(avgTrainingCoverageSelectedCpdef);
 				
 				
-				//-------------------------------
-				//Labeled fortification
-				//	stat calculation
-				//-------------------------------
+				//-----------------------------
+				// Labeled fortification
+				// 	  stat calculation
+				//-----------------------------
 				
 				//def length
 				double labelFortifyDefinitionLength = concept.getLength() + totalSelectedCpdefLength + noOfSelectedCpdef;	//-1 from the selected cpdef and +1 for NOT
@@ -1260,39 +1272,27 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				fmeasureLabelFortifyStat.addNumber(labelFortifyFmeasure);
 				
 				
-				jaccardValueCount.clear();
+				
 				outputWriter("---------------------------------------------");								
 				outputWriter("LABEL fortify counter partial definitions: ");			
 				outputWriter("---------------------------------------------");			
-				c = 1;
+				count = 1;
 				//output the selected counter partial definition information				
 				if (noOfSelectedCpdef > 0) {										
 					for (CELOE.PartialDefinition cpdef : selectedCounterPartialDefinitions) {
 						
-						outputWriter(c++ + cpdef.getId() + ". " + cpdef.getId() + " " + this.getCpdefString(cpdef, baseURI, prefixes)
+						outputWriter(count++ + cpdef.getId() + ". " + cpdef.getId() + " " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
 								+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
-								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
-						
-						
-						long tmp_key = Math.round(cpdef.getAdditionValue(1) * 1000);	//jaccard value is hold by the 2nd element
-						
-						if (jaccardValueCount.containsKey(tmp_key)) {
-							jaccardValueCount.put(tmp_key, jaccardValueCount.get(tmp_key)+1);
-						}
-						else
-							jaccardValueCount.put(tmp_key, 1);
-					}
-					
-					outputWriter("\n*** Jaccard distance values count for selected cpdefs:");
-					for (Long value : jaccardValueCount.keySet()) 
-						outputWriter(df.format(value/1000d) + ": " + jaccardValueCount.get(value));
+								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));	
+					}	
 					
 				}				
 
 				
 				outputWriter("----------------------");
 				
-				int[] noOfCpdefMultiStep = Orthogonality.getMultiStepFortificationStep(counterPartialDefinitions.size());
+				int[] noOfCpdefMultiStep = FortificationUtils.getMultiStepFortificationStep(counterPartialDefinitions.size());
+				
 				for (int i=0; i<6; i++) {
 					noOfCpdefUsedMultiStepFortStat[i].addNumber(noOfCpdefMultiStep[i]);
 					
@@ -1310,8 +1310,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				
 				//create data structure to hold the fortification result				
 				if (currFold == 0) {	//have  not initiallised
-					accuracyHalfFullStep = new double[strategyNames.length][minOfHalfCpdef];	//4 strategies
-					fmeasureHalfFullStep = new double[strategyNames.length][minOfHalfCpdef];
+					accuracyHalfFullStep = new double[noOfStrategies][minOfHalfCpdef];	//4 strategies
+					fmeasureHalfFullStep = new double[noOfStrategies][minOfHalfCpdef];
 					
 					accuracyFullStepStat = new Stat[noOfStrategies][minCpdef];
 					fmeasureFullStepStat = new Stat[noOfStrategies][minCpdef];
@@ -1337,7 +1337,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 						counterPartialDefinitions.size());
 				
 				//calculate accuracy, fmeasure  of the cpdef HALF FULL STEP
-				for (int i=0; i<strategyNames.length; i++) { 
+				for (int i=0; i<noOfStrategies; i++) { 
 					for (int j=0; j<minOfHalfCpdef; j++) {
 						//calculate the accuracy and fmeasure of full step fortification
 						accuracyHalfFullStep[i][j] += multiStepFortificationResult[i].fortificationAccuracyStepByStep[j];
@@ -1346,7 +1346,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				}
 				
 				//calculate accuracy, fmeasure FULL STEP by STEP
-				for (int i=0; i<strategyNames.length; i++) { 
+				for (int i=0; i<noOfStrategies; i++) { 
 					for (int j=0; j<minCpdef; j++) {
 						//calculate the accuracy and fmeasure of full step fortification
 						accuracyFullStepStat[i][j].addNumber(multiStepFortificationResult[i].fortificationAccuracyStepByStep[j]);
@@ -1388,7 +1388,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				outputWriter("  avg. cpdef. length: " + df.format(avgCPDefLength));				
 				outputWriter("  avg. cpdef training coverage: " + statOutput(df, avgCpdefCoverageTrainingStat, "%"));
 
-				outputWriter("  no of cpdef used in the multi-step fortification: " + arrayToString(noOfCpdefMultiStep));
+				outputWriter("  no of cpdef used in the multi-step fortification: " + FortificationUtils.arrayToString(noOfCpdefMultiStep));
 				
 				//f-measure
 				outputWriter("  f-measure training set: " + df.format(currFmeasureTraining));
@@ -1414,11 +1414,11 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				
 				
 				//output the fortified accuracy at 5%, 10%, ..., 50%				
-				for (int i=0; i<strategyNames.length; i++) {
-					outputWriter("  multi-step fortified accuracy by " + strategyNames[i] + ": " 
-							+ arrayToString(df, multiStepFortificationResult[i].fortificationAccuracy)
-							+ " -- correctness: " + arrayToString(df, multiStepFortificationResult[i].fortificationCorrectness)
-							+ " -- completeness: " + arrayToString(df, multiStepFortificationResult[i].fortificationCompleteness)
+				for (int i=0; i<noOfStrategies; i++) {
+					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ": " 
+							+ FortificationUtils.arrayToString(df, multiStepFortificationResult[i].fortificationAccuracy)
+							+ " -- correctness: " + FortificationUtils.arrayToString(df, multiStepFortificationResult[i].fortificationCorrectness)
+							+ " -- completeness: " + FortificationUtils.arrayToString(df, multiStepFortificationResult[i].fortificationCompleteness)
 						);
 				}	//output fortified accuracy at 5%, 10%, ..., 50%
 				
@@ -1463,8 +1463,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 						" -- fortified correctness: " + statOutput(df, correctnessBlindFortifyStat, "%") +
 						"-- fortified completeness: " + statOutput(df, completenessBlindFortifyStat, "%"));
 				
-				for (int i=0; i< strategyNames.length; i++) {					
-					outputWriter("  multi-step fortified accuracy by " + strategyNames[i] + ":");
+				for (int i=0; i< noOfStrategies; i++) {					
+					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ":");
 					
 					outputWriter("\t 5%: " + statOutput(df, accuracyPercentageFortifyStepStat[i][0], "%")
 							+ " -- correctness: " + statOutput(df, correctnessPercentageFortifyStepStat[i][0], "%")
@@ -1558,9 +1558,9 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					"\n\t-- fortified correctness: " + statOutput(df, correctnessBlindFortifyStat, "%") +
 					"\n\t-- fortified completeness: " + statOutput(df, completenessBlindFortifyStat, "%"));
 
-			for (int i=0; i< strategyNames.length; i++) {
+			for (int i=0; i< noOfStrategies; i++) {
 				
-				outputWriter("  multi-step fortified accuracy by " + strategyNames[i] + ":");
+				outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ":");
 				
 				outputWriter("\t 5%: " + statOutput(df, accuracyPercentageFortifyStepStat[i][0], "%")
 						+ " -- correctness: " + statOutput(df, correctnessPercentageFortifyStepStat[i][0], "%")
@@ -1614,8 +1614,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				);
 			
 			//for each strategy: strategy name, f-measure (5-50%)
-			for (int i=0; i<strategyNames.length; i++) {				
-				outputWriter("fmeasure - " + strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {				
+				outputWriter("fmeasure - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
 				for (int j=0; j<6; j++)
 					outputWriter(df.format(fmeasurePercentageFortifyStepStat[i][j].getMean()) 
 							+ "\n" + df.format(fmeasurePercentageFortifyStepStat[i][j].getStandardDeviation()));
@@ -1629,8 +1629,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				);
 			
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i<strategyNames.length; i++) {				
-				outputWriter("accuracy - " + strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {				
+				outputWriter("accuracy - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
 				for (int j=0; j<6; j++)
 					outputWriter(df.format(accuracyPercentageFortifyStepStat[i][j].getMean()) 
 							+ "\n" + df.format(accuracyPercentageFortifyStepStat[i][j].getStandardDeviation()));
@@ -1643,8 +1643,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				);
 			
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i<strategyNames.length; i++) {				
-				outputWriter("correctness - " + strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {				
+				outputWriter("correctness - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
 				for (int j=0; j<6; j++)
 					outputWriter(df.format(correctnessPercentageFortifyStepStat[i][j].getMean()) 
 							+ "\n" + df.format(correctnessPercentageFortifyStepStat[i][j].getStandardDeviation()));
@@ -1657,8 +1657,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				);
 			
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i<strategyNames.length; i++) {				
-				outputWriter("completeness - " + strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {				
+				outputWriter("completeness - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
 				for (int j=0; j<6; j++)
 					outputWriter(df.format(completenessPercentageFortifyStepStat[i][j].getMean()) 
 							+ "\n" + df.format(completenessPercentageFortifyStepStat[i][j].getStandardDeviation()));
@@ -1666,8 +1666,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			
 			outputWriter("======= RESULT SUMMARY FULL STEP =======");
 			outputWriter("======= Fmeasure full steps =======");
-			for (int i=0; i<strategyNames.length; i++) {	//6 strategies
-				outputWriter(strategyNames[i] + "(" + minCpdef + "/" + fmeasureFullStepStat[0].length + ")");	//fmeasureFullStepStat[0].length == minCpdef???
+			for (int i=0; i<noOfStrategies; i++) {	//6 strategies
+				outputWriter(FortificationUtils.strategyNames[i] + "(" + minCpdef + "/" + fmeasureFullStepStat[0].length + ")");	//fmeasureFullStepStat[0].length == minCpdef???
 				for (int j=0; j<minCpdef; j++) {
 					outputWriter(df.format(fmeasureFullStepStat[i][j].getMean()) + "\t"
 							+ df.format(fmeasureFullStepStat[i][j].getStandardDeviation()));
@@ -1677,8 +1677,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			
 			
 			outputWriter("======= Accuracy full steps =======");
-			for (int i=0; i<strategyNames.length; i++) {	//6 strategies
-				outputWriter(strategyNames[i] + "(" + minCpdef + "/" + accuracyFullStepStat[0].length + ")");
+			for (int i=0; i<noOfStrategies; i++) {	//6 strategies
+				outputWriter(FortificationUtils.strategyNames[i] + "(" + minCpdef + "/" + accuracyFullStepStat[0].length + ")");
 				for (int j=0; j<minCpdef; j++) {
 					outputWriter(df.format(accuracyFullStepStat[i][j].getMean()) + "\t"
 							+ df.format(accuracyFullStepStat[i][j].getStandardDeviation()));
@@ -1689,8 +1689,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			
 
 			outputWriter("======= Correctness full steps =======");
-			for (int i=0; i<strategyNames.length; i++) {	//6 strategies
-				outputWriter(strategyNames[i] + "(" + minCpdef + "/" + correctnessFullStepStat[0].length +")");
+			for (int i=0; i<noOfStrategies; i++) {	//6 strategies
+				outputWriter(FortificationUtils.strategyNames[i] + "(" + minCpdef + "/" + correctnessFullStepStat[0].length +")");
 				for (int j=0; j<minCpdef; j++) {
 					outputWriter(df.format(correctnessFullStepStat[i][j].getMean()) + "\t"
 							+ df.format(correctnessFullStepStat[i][j].getStandardDeviation()));
@@ -1700,8 +1700,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			
 			
 			outputWriter("======= Completeness full steps =======");
-			for (int i=0; i<strategyNames.length; i++) {	//4 strategies
-				outputWriter(strategyNames[i] + "(" + minCpdef + "/" + completenessFullStepStat[0].length +")");
+			for (int i=0; i<noOfStrategies; i++) {	//4 strategies
+				outputWriter(FortificationUtils.strategyNames[i] + "(" + minCpdef + "/" + completenessFullStepStat[0].length +")");
 				for (int j=0; j<minCpdef; j++) {
 					outputWriter(df.format(completenessFullStepStat[i][j].getMean()) + "\t"
 							+ df.format(completenessFullStepStat[i][j].getStandardDeviation()));
@@ -1729,8 +1729,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			String allCpdefFortificationComp = "";
 			String allCpdefFortificationFm = "";
 			
-			for (int i=0; i<strategyNames.length; i++) {	//6 strategies										
-				strategies += strategyNames[i] + ", ";
+			for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
+				strategies += FortificationUtils.strategyNames[i] + ", ";
 				
 				//test data (no fortification
 				noCpdefFortificationAcc += df.format(accuracy.getMean()) + "\t" + df.format(accuracy.getStandardDeviation()) + "\t";
@@ -1765,7 +1765,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				}
 				
 				//accuracy
-				for (int i=0; i<strategyNames.length; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
 					allResult += df.format(accuracyFullStepStat[i][j].getMean()) + "\t"
 						+ df.format(accuracyFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}		
@@ -1773,7 +1773,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				allResult += bestAcc;
 				
 				//correctness
-				for (int i=0; i<strategyNames.length; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
 					allResult += df.format(correctnessFullStepStat[i][j].getMean()) + "\t"
 						+ df.format(correctnessFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}
@@ -1781,7 +1781,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				allResult += bestCor;
 				
 				//completeness
-				for (int i=0; i<strategyNames.length; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
 					allResult += df.format(completenessFullStepStat[i][j].getMean()) + "\t"
 						+ df.format(completenessFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}
@@ -1789,7 +1789,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				allResult += bestComp;
 				
 				//f-measure
-				for (int i=0; i<strategyNames.length; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
 					allResult += df.format(fmeasureFullStepStat[i][j].getMean()) + "\t"
 						+ df.format(fmeasureFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}
@@ -2059,7 +2059,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 		}
 	}
 	*/
-
+	
+	/*
 	@Override
 	protected void outputWriter(String output) {
 		logger.info(output);
@@ -2077,7 +2078,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 		}
 		
 	}
-	
+	*/
 	
 	/*	
 	class ParCELExtraNodeNegCoverageComparator implements Comparator<ParCELExtraNode> {
@@ -2101,7 +2102,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 
 
 
-	class CoverageComparator2 implements Comparator<CELOE.PartialDefinition> { 
+	/*
+	class CoverageComparator implements Comparator<CELOE.PartialDefinition> { 
 		@Override
 		public int compare(CELOE.PartialDefinition p1, CELOE.PartialDefinition p2) {
 			if (p1.getCoverage() > p2.getCoverage())
@@ -2113,7 +2115,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				
 		}
 	}
-	
+	*/
 	
 	/**
 	 * Sort descreasingly 
@@ -2121,6 +2123,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 	 * @author An C. Tran
 	 *
 	 */
+	/*
 	class AdditionalValueComparator implements Comparator<CELOE.PartialDefinition> {		
 		int index = 0;
 		boolean descending;
@@ -2157,66 +2160,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 		}
 		
 	}
-
-	
-	
-	private String getCpdefString(CELOE.PartialDefinition cpdef, String baseURI, Map<String, String> prefixes) {
-		DecimalFormat df = new DecimalFormat();
-		
-		String result = cpdef.getDescription().toKBSyntaxString(baseURI, prefixes)  
-				+ "(l=" + cpdef.getDescription().getLength() 
-				+ ", cn_training=" + df.format(cpdef.getCoverage())
-				+ ", ortho=" + df.format(cpdef.getAdditionValue(0))
-				+ ", cn_test=" + Math.round(cpdef.getAdditionValue(1))
-				+ ", jaccard=" + df.format(cpdef.getAdditionValue(2))				
-				+ ", fort_training_score(cn_test)=" + df.format(cpdef.getAdditionValue(3))
-				+ ", simAll=" + df.format(cpdef.getAdditionValue(4))
-				+ ", simPos=" + df.format(cpdef.getAdditionValue(5))
-				+ ", simNeg=" + df.format(cpdef.getAdditionValue(6))
-				+ ")"; 
-				
-		return result;
-	}
-
-	
-	/**
-	 * Convert an array of double that contains accuracy/completeness/correctness into a string (from the 1st..6th elements)
-	 * 
-	 * @param df Decimal formatter 
-	 * @param arr Array of double (7 elements)
-	 * 
-	 * @return A string of double values
 	 */
-	private String arrayToString(int[] arr) {
-		String result = "[" + arr[0];
-		
-		for (int i=1; i<arr.length; i++)
-			result += (";" + arr[i]);
-		
-		result += "]";
-		
-		return result;
-	}
-	
-	
-	/**
-	 * Convert an array of double that contains accuracy/completeness/correctness into a string (from the 1st..6th elements)
-	 * 
-	 * @param df Decimal formatter 
-	 * @param arr Array of double (7 elements)
-	 * 
-	 * @return A string of double values
-	 */
-	private String arrayToString(DecimalFormat df, double[] arr) {
-		String result = "[" + df.format(arr[0]);
-		
-		for (int i=1; i<arr.length; i++)
-			result += (";" + df.format(arr[i]));
-		
-		result += "]";
-		
-		return result;
-	}
+
 }
 
 

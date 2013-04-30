@@ -773,7 +773,7 @@ public class ParCELExFortifiedCrossValidation2Phases extends CrossValidation {
 				
 				ConceptSimilarity similarityCheckerAll = new ConceptSimilarity(rs, allFortificationExamples);
 				ConceptSimilarity similarityCheckerPos= new ConceptSimilarity(rs, fortificationTrainingPos);
-				ConceptSimilarity similarityCheckerNeg = new ConceptSimilarity(rs, fortificationTrainingNeg);
+				ConceptSimilarity similarityCheckerNeg = new ConceptSimilarity(rs, fortificationTrainingNeg );
 				
 		
 				//start the BLIND fortification and calculate the scores
@@ -807,7 +807,7 @@ public class ParCELExFortifiedCrossValidation2Phases extends CrossValidation {
 					//jaccard
 					//---------
 					//System.out.print("jaccard...");
-					double jaccardDistance = Orthogonality.jaccardDistance(concept, cpdef);		//calculate jaccard distance between the learned concept and the cpdef	
+					double jaccardDistance = Orthogonality.jaccardDistance_old(concept, cpdef);		//calculate jaccard distance between the learned concept and the cpdef	
 					
 					//count the jaccard values, for stat purpose
 					long tmp_key = Math.round(jaccardDistance * 1000);
@@ -830,9 +830,9 @@ public class ParCELExFortifiedCrossValidation2Phases extends CrossValidation {
 					fortCp.removeAll(rs.hasType(concept, fortificationTrainingPos));
 					fortCn.removeAll(rs.hasType(concept, fortificationTrainingNeg));
 					
-					double fortificationTrainingScore = Orthogonality.fortificationScore(pelletReasoner, cpdef, concept, 
+					double fortificationTrainingScore = FortificationUtils.fortificationScore(pelletReasoner, cpdef, concept, 
 							cp, cn, fortificationTrainingPos.size(), fortificationTrainingNeg.size(), 
-							cp-fortCp.size(), cn-fortCn.size());
+							cp-fortCp.size(), cn-fortCn.size(), ((ParCELExAbstract)la).getMaximumHorizontalExpansion());
 					
 					
 					//--------------

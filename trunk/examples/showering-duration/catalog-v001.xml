@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri id="User Entered Import Resolution" name="file:../examples/showering-duration/abd.muse.massey.ac.nz.owl" uri="abd.muse.massey.ac.nz.owl"/>
     <uri id="User Entered Import Resolution" name="file:../examples/mu-bus/mu-bus12-rich-double.owl" uri="mu-bus12-rich-double.owl"/>
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3-double_0000_0910.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3-double_0710_0910.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3-double_0710_1200.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3-double_0710_2130.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3_0000_0910.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3_0710_0910.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3_0710_1200.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-13weeks-rule3_0710_2130.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-flat-double.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-flat.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-rich-13weeks-rule3-double_0710_0910.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-rich-13weeks-rule3_0710_0910.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1360751622759" name="duplicate:http://www.w3.org/2002/07/owl" uri="mu-bus12-rich-double.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_simple.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd%20(copy).muse.massey.ac.nz.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_simple2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1363665256473" name="http://uca2.abd.muse.massey.ac.nz" uri="uca2_300.owl"/>
     </group>
 </catalog>

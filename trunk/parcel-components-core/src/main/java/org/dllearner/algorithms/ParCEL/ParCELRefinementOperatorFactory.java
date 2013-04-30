@@ -24,20 +24,22 @@ public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<R
 	private ClassHierarchy classHierarchy;
 	private Description startclass;
 	private Map<DatatypeProperty, List<Double>> splits;
+	private int maxNoOfSplits;
 	
 
 	private boolean useNegation = true;
 	private boolean useDisjunction = true;
-	private boolean useHasValue = false;
+	private boolean useHasValue = true;
 	
 	
 	Logger logger = Logger.getLogger(this.getClass());	
 	
-	public ParCELRefinementOperatorFactory(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, Description startclass) {
+	public ParCELRefinementOperatorFactory(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, Description startclass, int maxNoOfSplits) {
 		this.reasoner = reasoner;
 		this.classHierarchy = classHierarchy;
 		this.startclass = startclass;
 		this.splits = null;
+		this.maxNoOfSplits = maxNoOfSplits;
 	}
 	
 	
@@ -79,9 +81,11 @@ public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<R
 		refinementOperator.setUseNegation(this.useNegation);
 		refinementOperator.setUseDataHasValueConstructor(this.useHasValue);
 		refinementOperator.setUseHasValueConstructor(this.useHasValue);
+		refinementOperator.setMaxNoOfSplits(maxNoOfSplits);
 		
 		if (this.splits != null)
 			refinementOperator.setSplits(this.splits);
+		
 		
 		//init the refinement operator;
 		refinementOperator.init();
