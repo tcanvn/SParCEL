@@ -35,6 +35,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.split.CELOEDoubleSplitterAbstract;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
@@ -44,6 +45,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -120,6 +122,8 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 	private HashSet<PartialDefinition> partialDefinitions;
 	private HashSet<Individual> unCoveredPos;
 	private boolean allPosCovered = false;
+	
+	private long searchtreeSizeForBestDescription = 0;
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
@@ -220,6 +224,9 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 	private int maxNoOfSplits = 10;
 	
 	
+	//splitter used to split the numerical data properties
+	private CELOEDoubleSplitterAbstract splitter = null;
+	
 	private int expressionTestCountLastImprovement;
 	
 	
@@ -309,7 +316,22 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 			operator = new RhoDRDown();
 			((RhoDRDown)operator).setStartClass(startClass);
 			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).setMaxNrOfSplits(maxNoOfSplits);
+			
+			if (this.splitter == null)
+				((RhoDRDown)operator).setMaxNrOfSplits(maxNoOfSplits);
+			else {
+				splitter.setReasoner(reasoner);
+				splitter.setPositiveExamples(((PosNegLPStandard)learningProblem).getPositiveExamples());
+				splitter.setNegativeExamples(((PosNegLPStandard)learningProblem).getNegativeExamples());
+				splitter.init();
+
+				Map<DatatypeProperty, List<Double>> splits = null;
+				splits = splitter.computeSplits();
+				((RhoDRDown)operator).setSplits(splits);
+				
+				logger.info("Splits are computed and assigned to the refinement operator");
+			}
+			
 			((RhoDRDown)operator).init();
 		}
 		
@@ -512,7 +534,8 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 				expressionTestCountLastImprovement = expressionTests;
 				timeLastImprovement = System.nanoTime();
-				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()) + " (" + this.getTotalNumberOfDescriptionsGenerated() + ")");
+				this.searchtreeSizeForBestDescription = this.getTotalDescriptions();
 			}
 
 			// chose best node according to heuristics
@@ -526,9 +549,13 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 				
 			//if (loop < 200)
 			//	System.out.println("next node " + loop + ": " + nextNode.getShortDescription(baseURI));
-//			for(Description refinement : refinements) {
-//				System.out.println("refinement: " + refinement);
-//			}
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("** refinement node:" + nextNode);
+				for(Description refinement : refinements) {
+					logger.debug("  - refinement: " + refinement);
+				}
+			}
 //			if((loop+1) % 500 == 0) {
 //				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
 //				System.exit(0);
@@ -718,7 +745,7 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 			if(accuracy > bestAccuracy) {
 				bestAccuracy = accuracy;
 				bestDescription = description;
-				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription)); 
+				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription) + " (" + this.getTotalNumberOfDescriptionsGenerated() + ")"); // + getTemporaryString(bestDescription)); 
 			}
 			return true;
 		} 
@@ -1243,7 +1270,7 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 		double coverage = 0.0;
 		List<Double> additionValue = new LinkedList<Double>();
 		
-		private int maxAdditionalValue = 10;
+		private int maxAdditionalValue = 15;
 		
 		public PartialDefinition (Description des, double cov) {
 			this.description = des;
@@ -1307,6 +1334,23 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 
 	public void setMaxNoOfSplits(int maxNoOfSplits) {
 		this.maxNoOfSplits = maxNoOfSplits;
+	}
+
+	public void setSplitter(CELOEDoubleSplitterAbstract splitter) {
+		this.splitter = splitter;
+	}
+
+	public CELOEDoubleSplitterAbstract getSplitter() {
+		return splitter;
+	}
+
+	public long getSearchtreeSizeForBestDescription() {
+		return searchtreeSizeForBestDescription;
+	}
+
+	public void setSearchtreeSizeForBestDescription(
+			long searchtreeSizeForBestDescription) {
+		this.searchtreeSizeForBestDescription = searchtreeSizeForBestDescription;
 	}
 
 	

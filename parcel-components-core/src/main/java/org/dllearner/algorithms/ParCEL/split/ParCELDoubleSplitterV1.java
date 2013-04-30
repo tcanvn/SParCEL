@@ -222,6 +222,11 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 
 				// add processed property into the result set (splits)
 				splits.put(dp, values);
+				
+				if (logger.isInfoEnabled())
+					logger.info("Splitting: " + dp + ", no of values: " + relations.get(dp).size()
+							+ ", splits: " + values.size());
+				
 			}
 		}
 		

@@ -76,7 +76,7 @@ public class GlobalEnrichment {
 	private static boolean skipSuccessfulEndpoints = true;
 
 	// parameters
-	private static double threshold = 0.8;
+	private static double threshold = 0.8; 
 	private static int nrOfAxiomsToLearn = 10;
 	private static int queryChunkSize = 1000;
 	private static int maxExecutionTimeInSeconds = 10;

@@ -42,10 +42,10 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	protected Set<NamedClass> ignoredConcepts = null;
 
 	@ConfigOption(name = "minimalCoverage", defaultValue = "0", description = "Minimal coverage that a partial definition must approach so that it can be used")
-	private double minimalCoverage = 0;		//0 means no constrain on this condition
+	protected double minimalCoverage = 0;		//0 means no constrain on this condition
 	
 	@ConfigOption(name = "useHasValue", defaultValue = "false", description = "Use value restriction or not")
-	private boolean useHasValue = false;
+	protected boolean useHasValue = false;
 	
 	
 	protected int maxHorizExp = 0;

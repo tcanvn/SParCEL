@@ -19,17 +19,17 @@ public class ParCELDefaultHeuristic implements ParCELHeuristic {
 	protected double correctnessFactor = 1.0;
 	
 	// penalty for long descriptions
-	protected double expansionPenaltyFactor = 0.1;	//0.01
+	protected double expansionPenaltyFactor = 0.05;	//0.01, 0.05
 
 	// bonus for gained accuracy
-	protected double gainBonusFactor = 0.2;		//0.1
+	protected double gainBonusFactor = 0.2;		//0.1, 0.2
 
 	// penalty if a node description has very many refinements since exploring
 	// such a node is computationally very expensive
 	protected double nodeRefinementPenalty = 0.0001;
 
 	// award for node with high accuracy
-	protected double accuracyAwardFactor = 0.01;
+	protected double accuracyAwardFactor = 0.01;	//0.01
 
 	// syntactic comparison as final comparison criterion
 	protected ConceptComparator conceptComparator = new ConceptComparator();

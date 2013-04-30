@@ -47,7 +47,7 @@ public class ParCELImprovedCoverageGreedyReducer implements ParCELReducer {
 	 *            Set of partial definitions
 	 * @param positiveExamples
 	 *            Set of positive examples (used to check whether partial definition is useful
-	 * @param uncoveredPositiveExamples
+	 * @param uncoveredPositiveExamplesAllowed
 	 *            Number of uncovered positive examples allowed
 	 * 
 	 * @return Subset of partial definitions that cover (positive examples \ uncovered positive
@@ -55,7 +55,7 @@ public class ParCELImprovedCoverageGreedyReducer implements ParCELReducer {
 	 */
 	@Override
 	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
-			Set<Individual> positiveExamples, int uncoveredPositiveExamples) 
+			Set<Individual> positiveExamples, int uncoveredPositiveExamplesAllowed) 
 	{
 		
 		Set<Individual> positiveExamplesTmp = new HashSet<Individual>();
@@ -74,7 +74,7 @@ public class ParCELImprovedCoverageGreedyReducer implements ParCELReducer {
 			// reducedPartialDefinition.add((PDLLExtraNode)partialDefs[0]);
 			// positiveExamplesTmp.removeAll(((PDLLExtraNode)partialDefs[0]).getCoveredPositiveExamples());
 
-			for (int i = 0; (positiveExamplesTmp.size() > uncoveredPositiveExamples)
+			for (int i = 0; (positiveExamplesTmp.size() > uncoveredPositiveExamplesAllowed)
 					&& (i < partialDefinitions.size()); i++) {
 
 				// count the number of different positive examples covered

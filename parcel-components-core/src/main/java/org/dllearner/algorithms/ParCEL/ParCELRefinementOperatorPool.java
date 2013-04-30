@@ -28,9 +28,9 @@ public class ParCELRefinementOperatorPool extends StackObjectPool<RefinementOper
 	 * @param maxIdle
 	 */
 	public ParCELRefinementOperatorPool(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, 
-			Description startclass, int maxIdle) 
+			Description startclass, int maxIdle, int maxNoOfSplits) 
 	{
-		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass), maxIdle);		
+		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass, maxNoOfSplits), maxIdle);		
 	}
 	
 	/**
@@ -55,6 +55,11 @@ public class ParCELRefinementOperatorPool extends StackObjectPool<RefinementOper
 		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass, splitter), maxIdle);		
 	}
 	
+	
+	public ParCELRefinementOperatorPool(ParCELRefinementOperatorFactory parcelRefinementFactory) {
+		super(parcelRefinementFactory);
+	}
+	
 	/**
 	 * Create refinement operator pool given max number of idle object, max capacity without splitter
 	 * 
@@ -65,9 +70,9 @@ public class ParCELRefinementOperatorPool extends StackObjectPool<RefinementOper
 	 * @param maxIdleCapacity
 	 */
 	public ParCELRefinementOperatorPool(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, 
-			Description startclass, int maxIdle, int maxIdleCapacity) 
+			Description startclass, int maxIdle, int maxIdleCapacity, int maxNoOfSplits) 
 	{
-		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass), maxIdle, maxIdleCapacity);		
+		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass, maxNoOfSplits), maxIdle, maxIdleCapacity);		
 	}
 
 	

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ParCEL.ParCELExtraNode;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.CardinalityRestriction;
@@ -69,8 +70,29 @@ public class ConceptSimilarity {
 	private AbstractReasonerComponent reasoner;
 	private Set<Individual> instances;
 	
+	private static Logger logger = Logger.getLogger(ConceptSimilarity.class);
+	
 	public ConceptSimilarity() {
 		this.reasoner = null;
+	}
+	
+	
+	
+	public static double getConceptOverlapSimple(Set<Individual> coverC, Set<Individual> coverD) {
+		
+		//compute the intersection between C and D
+		Set<Individual> intersection = new HashSet<Individual>();
+		intersection.addAll(coverC);
+		intersection.retainAll(coverD);
+		
+		int commonInstances = intersection.size();
+		int allInstances = coverC.size() + coverD.size() - commonInstances;
+		
+		double dissimilarity = commonInstances / (double)coverC.size();
+		if (dissimilarity < (commonInstances / (double)coverD.size()))
+			dissimilarity = commonInstances / (double)coverD.size();
+		
+		return commonInstances / (double)allInstances * dissimilarity;
 	}
 
 	
@@ -316,12 +338,12 @@ public class ConceptSimilarity {
 		//restrictions
 		else if (description instanceof Restriction) {
 			PropertyExpression pro = ((Restriction)description).getRestrictedPropertyExpression();			
-			if ((pro instanceof DatatypeProperty) || (description instanceof ValueRestriction))	//datatype property does not need to be nomalised	
+			if ((pro instanceof DatatypeProperty) || (description instanceof ValueRestriction))	//datatype property does not need to be normalised	
 				return description;		
 			else { 	//object properties, normalise its Range
 				//normalise the range of restriction and replace it with the normalised range
 				if (description.getChildren().size() == 0)
-					System.out.println("**** ERROR: Restriction [" + description + "] has no child");
+					logger.warn("**** ERROR: Restriction [" + description + "] has no child");
 				
 				Description newChild = normalise(level+1,description.getChild(0));
 				description.replaceChild(0, newChild);
@@ -335,6 +357,7 @@ public class ConceptSimilarity {
 	
 	/**
 	 * Extract the atomic/primary concepts at the top level of a description
+	 * Why List, not Set????
 	 * 
 	 * @param description
 	 * @return
@@ -346,9 +369,9 @@ public class ConceptSimilarity {
 				(description instanceof Nothing))
 			result.add(description);		
 		else if (description instanceof Negation) {
-			List<Description> primNegated = prim(description.getChild(0));
+			List<Description> primNegated = prim(description.getChild(0));	
 			if (primNegated.size() > 0)
-				result.add(description);
+				result.add(description);	//TODO: wrong here???
 		}
 		else if ((description instanceof Intersection) || (description instanceof Union)) {
 			for (Description child : description.getChildren()) {
@@ -364,8 +387,36 @@ public class ConceptSimilarity {
 	} //prim()
 	
 	
+	
+	public static Set<Description> primSet(Description description) {
+		Set<Description> result = new HashSet<Description>();
+		
+		if ((description instanceof NamedClass) ||(description instanceof Thing) ||
+				(description instanceof Nothing))
+			result.add(description);
+		else if (description instanceof Negation) {
+			Set<Description> primNegation = primSet(description.getChild(0));
+			if (primNegation.size() > 0) {
+				for (Description d : primNegation)
+				result.add(new Negation(d));
+			}
+		}
+		else if ((description instanceof Intersection) || (description instanceof Union)) {
+			for (Description child : description.getChildren()) {
+			
+				Set<Description> tmp = primSet(child);
+				for (Description des : tmp)
+					if (!result.contains(des))
+							result.add(des);
+			}
+		}		
+		
+		return result;
+	} //prim()
+	
 	/**
 	 * Return a list of properties used in a given description.
+	 * Why List, not Set???
 	 *  
 	 * @param description Description
 	 * 
@@ -390,6 +441,26 @@ public class ConceptSimilarity {
 		return result;
 	} //getProperty()
 	
+	
+	
+	public static Set<PropertyExpression> getPropertySet(Description description) {
+		Set<PropertyExpression> result = new HashSet<PropertyExpression>();
+		
+		if ((description instanceof Restriction))
+				result.add(((Restriction)description).getRestrictedPropertyExpression());
+		else if (description instanceof Intersection) {
+			for (Description child : description.getChildren()) {
+				
+				//do not use addAll to avoid duplicate???
+				List<PropertyExpression> tmp = getProperty(child); 
+				for (PropertyExpression pro : tmp)
+					if (!result.contains(pro))
+						result.add(pro);
+			}
+		}
+		
+		return result;
+	} //getPropertySet()
 	
 	/**
 	 * Get the Range of a property in a given description 
@@ -424,7 +495,7 @@ public class ConceptSimilarity {
 				}
 				else if (!(description instanceof ValueRestriction)) {	//object property ==> get its range
 					if (description.getChildren().size() == 0)
-						System.out.println("***ERROR: Description [" + description + "] has no child");
+						logger.warn("***ERROR: Description [" + description + "] has no child");
 					
 					result.add(description.getChild(0));
 				}
@@ -642,8 +713,8 @@ public class ConceptSimilarity {
 	private double similarityInner(List<PropertyExpression> allPro, Description C, Description D) {
 		
 		double sp = 0;
-		double sr = 0;
-		double sn = 0;
+		double sr = 1;
+		double sn = 1;
 		
 		List<Description> primC = prim(C);
 		List<Description> primD = prim(D);				
@@ -653,9 +724,13 @@ public class ConceptSimilarity {
 		if (allPro.size() > 0) {
 			sn = simNum(allPro, C, D);		
 			sr = simRole(allPro, C, D);
+			return (1/3d)*(sp + sr + sn);
 		}
+		else
+			return sp;
 		
-		return (1/3d)*(sp + sr + sn);
+		//return (1/3d)*(sp + sr + sn);
+		
 	}
 	
 	
@@ -728,6 +803,13 @@ public class ConceptSimilarity {
 	} //disjunctiveSimilarity()
 	
 	
+	/**
+	 * Compute similarity between a description and a set of descriptions (max similarity will be returned)
+	 * 
+	 * @param descriptions Set of descriptions
+	 * @param D A description
+	 * @return
+	 */
 	public double disjunctiveSimilarity(Set<Description> descriptions, Description D) {
 		double similarity = 0;
 		
@@ -739,6 +821,15 @@ public class ConceptSimilarity {
 		return similarity;
 	}
 	
+	
+	/**
+	 * Compute similarity between a description and a set of ParCELNodes (max)
+	 *   
+	 * @param descriptions Set of descriptions form of PerCELExNode
+	 * @param D A description
+	 * 
+	 * @return Maximal similarity between D and the set of descriptions
+	 */
 	public double disjunctiveSimilarityEx(Set<ParCELExtraNode> descriptions, Description D) {
 		double similarity = 0;
 		
@@ -805,7 +896,7 @@ public class ConceptSimilarity {
 	 * @param maxC
 	 * @param minD
 	 * @param maxD
-	 * @return
+	 * @return (minMax - maxMin + 1)/(double)(maxMax - minMin + 1);
 	 */
 	private static double simNumInner(int minC, int maxC, int minD, int maxD) {
 		int minMax = (maxC < maxD)? maxC : maxD;
@@ -878,7 +969,12 @@ public class ConceptSimilarity {
 	 * @throws OWLOntologyCreationException 
 	 */
 	public static void main(String[] args) throws OWLOntologyCreationException {
-		//check for the CWA
+
+		
+		ConceptSimilarity similarityChecker = new ConceptSimilarity();
+		
+		/*
+		//check for the CWA		
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new File("../examples/family-benchmark/family-benchmark.owl"));
@@ -912,16 +1008,22 @@ public class ConceptSimilarity {
 
 		System.out.println("============");
 		
+		NamedClass dlPerson = new NamedClass("Person");
 		NamedClass dlMale = new NamedClass("Male");
+		NamedClass dlFemale = new NamedClass("Female");
+		
 		Negation dlNotMale = new Negation(dlMale);
 		
-		System.out.println("notMale axiom: " + dlNotMale);
+		//System.out.println("notMale axiom: " + dlNotMale);
 		
-		System.out.println("notMale converted by OWLAPIConverter: " + OWLAPIConverter.getOWLAPIDescription(dlNotMale));
+		//System.out.println("notMale converted by OWLAPIConverter: " + OWLAPIConverter.getOWLAPIDescription(dlNotMale));
 
 		
-		System.exit(0);
-
+		System.out.println("Similarity between Male and Female: " + similarityChecker.disjunctiveSimilarity(dlMale, dlFemale));
+		
+		 
+		//System.exit(0);
+		 */
 
 		
 		
@@ -987,7 +1089,7 @@ public class ConceptSimilarity {
 		System.out.println("prim(" + AandB_and_maxChild + ") = " + prim(AandB_and_maxChild));
 		*/
 		
-		ConceptSimilarity similarityChecker = new ConceptSimilarity();
+		
 		
 		System.out.println("----------------");
 		System.out.println("Example 1:");
@@ -1038,6 +1140,13 @@ public class ConceptSimilarity {
 		System.out.println(" C = " + Example2.C.toManchesterSyntaxString(null, null));
 		System.out.println(" D = " + Example2.D.toManchesterSyntaxString(null, null));
 		
+		
+		//List<Description> flattenC2 = flattenDisjunctiveNormalDescription(Example2.C);
+		//List<Description> flattenD2 = flattenDisjunctiveNormalDescription(normalise(0, Example2.D));
+		
+		//System.out.println("Flatten(C) = " + flattenC2);
+		//System.out.println("Flatten(D) = " + flattenD2);
+		
 		System.out.println("prim(C) = " + prim(Example2.C));
 		System.out.println("prim(D) = " + prim(Example2.D));
 		
@@ -1060,11 +1169,11 @@ public class ConceptSimilarity {
 		
 		System.out.println("val(hasChild, C) = " + val(Example2.hasChild, Example2.C));
 		System.out.println("val(hasChild, D) = " + val(Example2.hasChild, Example2.D));
-		val(Example2.hasParent, Example2.D);
+		//val(Example2.hasParent, Example2.D);
 		System.out.println("val(hasParent, D) = " + val(Example2.hasParent, Example2.D));
 		
 		System.out.println("sp(prim(C), prim(D)) = " + similarityChecker.simPrim(prim(Example2.C), prim(Example2.D)));
-		System.out.println("sp(prim(C), prim(D)) = " + 
+		System.out.println("sp(val(C), val(D)) = " + 
 				similarityChecker.simPrim(val(Example2.marriedTo, Example2.C), val(Example2.marriedTo, Example2.D)));
 		
 		System.out.println("min(hasChild, C) = " + min(Example2.hasChild, Example2.C));
@@ -1083,9 +1192,12 @@ public class ConceptSimilarity {
 		System.out.println("----------------");
 		
 		//System.out.println("sn (C, D) = " + simNum(Example2.C, Example2.D));
-		System.out.println("similarity(person, animal) = " + similarityChecker.disjunctiveSimilarity(Example2.person, Example2.animal));
+		//System.out.println("similarity(person, animal) = " + similarityChecker.disjunctiveSimilarity(Example2.person, Example2.animal));
 		System.out.println("similarity(C, D) = " + similarityChecker.disjunctiveSimilarity(Example2.C, Example2.D));
 		
+		Union person_or_not_male_and_person = new Union(Example2.person_and_not_male, Example2.person);
+		
+		System.out.println(normalise(0, person_or_not_male_and_person));
 		
 	}
 	
@@ -1150,20 +1262,23 @@ public class ConceptSimilarity {
 		public static ObjectProperty hasChild = new ObjectProperty("hasChild");
 		public static Negation notMale = new Negation(male);
 		public static Intersection person_and_not_male = new Intersection(person, notMale);
+		public static Union person_or_not_male = new Union(person, notMale);
 		
 		public static NamedClass animal = new NamedClass("animal");		
 		
-		public static ObjectAllRestriction marriedTo_all_Person = new ObjectAllRestriction(marriedTo, person);		
-		public static ObjectAllRestriction marriedTo_all_person_and_not_male = new ObjectAllRestriction(marriedTo, person_and_not_male);
+		public static ObjectSomeRestriction marriedTo_all_Person = new ObjectSomeRestriction(marriedTo, person);		
+		public static ObjectAllRestriction marriedTo_all_person_and_not_male = new ObjectAllRestriction(marriedTo, person_and_not_male);		
+		public static ObjectAllRestriction marriedTo_all_person_or_not_male = new ObjectAllRestriction(marriedTo, person_or_not_male);
 		public static ObjectCardinalityRestriction hasChild_less_1 = new ObjectMaxCardinalityRestriction(1, hasChild, thing);
 		public static ObjectCardinalityRestriction hasChild_less_2 = new ObjectMaxCardinalityRestriction(2, hasChild, thing);
 		
 		public static Description C = new Intersection(person, marriedTo_all_Person, hasChild_less_1);
-		public static Description D = new Intersection(male, marriedTo_all_person_and_not_male, hasChild_less_2);
+		public static Description D = new Intersection(male, marriedTo_all_person_or_not_male, hasChild_less_2, marriedTo_all_Person);
 		
-		public static ObjectProperty hasParent = new ObjectProperty("hasParent");
-
-		
+		public static ObjectProperty hasParent = new ObjectProperty("hasParent");		
 	}
+	
+	
+
 }
  

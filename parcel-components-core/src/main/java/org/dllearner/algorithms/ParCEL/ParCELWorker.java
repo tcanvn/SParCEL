@@ -118,7 +118,7 @@ public class ParCELWorker extends ParCELWorkerAbstract {
 	public void run() {
 
 		if (logger.isTraceEnabled())
-			logger.trace("[PLLearning] Processing node ("
+			logger.trace("[ParCEL-Worker] Processing node ("
 					+ ParCELStringUtilities.replaceString(nodeToProcess.toString(), this.baseURI,
 							this.prefix));
 
@@ -165,8 +165,9 @@ public class ParCELWorker extends ParCELWorkerAbstract {
 				if (addedNode != null) {
 
 					// PARTIAL DEFINITION (correct and not necessary to be complete)
-					if (addedNode.getCorrectness() == 1.0d) {
-						addedNode.setGenerationTime(System.currentTimeMillis() - starttime);
+					if (addedNode.getCorrectness() >= 1.0d - learner.getNoiseAllowed()) {
+						//addedNode.setGenerationTime(System.currentTimeMillis() - starttime);
+						addedNode.setGenerationTime(learner.getTotalDescriptions());
 						definitionsFound.add(addedNode);
 					}
 					// DESCRIPTION
@@ -272,7 +273,7 @@ public class ParCELWorker extends ParCELWorkerAbstract {
 
 		// currently, noise is not processed. it should be processed later
 		ParCELEvaluationResult accurateAndCorrectness = learningProblem
-				.getAccuracyAndCorrectness2(description);
+				.getAccuracyAndCorrectness2(description, learner.getNoiseAllowed());
 
 		// description is too weak, i.e. covered no positive example
 		if (accurateAndCorrectness.accuracy == -1.0d)

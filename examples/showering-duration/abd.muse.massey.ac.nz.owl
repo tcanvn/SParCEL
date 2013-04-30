@@ -13,12 +13,12 @@
 
 <rdf:RDF xmlns="http://abd.muse.massey.ac.nz#"
      xml:base="http://abd.muse.massey.ac.nz"
-     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
-     xmlns:abd="http://abd.muse.massey.ac.nz#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#">
+     xmlns:abd="http://abd.muse.massey.ac.nz#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="http://abd.muse.massey.ac.nz"/>
     
 
@@ -92,29 +92,10 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#placedAt -->
-
-    <owl:ObjectProperty rdf:about="&abd;placedAt">
-        <rdfs:domain rdf:resource="&abd;Furniture"/>
-        <rdfs:range rdf:resource="&abd;Location"/>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#takeActivity -->
 
     <owl:ObjectProperty rdf:about="&abd;takeActivity">
         <rdfs:range rdf:resource="&abd;Activity"/>
-        <rdfs:domain rdf:resource="&abd;People"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#takenAt -->
-
-    <owl:ObjectProperty rdf:about="&abd;takenAt">
-        <rdfs:domain rdf:resource="&abd;Activity"/>
-        <rdfs:range rdf:resource="&abd;Location"/>
     </owl:ObjectProperty>
     
 
@@ -232,15 +213,6 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#AbnormalActivity -->
-
-    <owl:Class rdf:about="&abd;AbnormalActivity">
-        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
-        <owl:disjointWith rdf:resource="&abd;NormalActivity"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Activity -->
 
     <owl:Class rdf:about="&abd;Activity"/>
@@ -329,54 +301,6 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#BackYard -->
-
-    <owl:Class rdf:about="&abd;BackYard">
-        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Bathroom -->
-
-    <owl:Class rdf:about="&abd;Bathroom">
-        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Bed -->
-
-    <owl:Class rdf:about="&abd;Bed">
-        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Bedroom -->
-
-    <owl:Class rdf:about="&abd;Bedroom">
-        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Carer -->
-
-    <owl:Class rdf:about="&abd;Carer">
-        <rdfs:subClassOf rdf:resource="&abd;People"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Carpark -->
-
-    <owl:Class rdf:about="&abd;Carpark">
-        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Cold -->
 
     <owl:Class rdf:about="&abd;Cold">
@@ -416,42 +340,10 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#DoingLaundry -->
-
-    <owl:Class rdf:about="&abd;DoingLaundry">
-        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#DomesticWork -->
-
-    <owl:Class rdf:about="&abd;DomesticWork">
-        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Duration -->
 
     <owl:Class rdf:about="&abd;Duration">
         <rdfs:subClassOf rdf:resource="&abd;Time"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#DurationAbnormality -->
-
-    <owl:Class rdf:about="&abd;DurationAbnormality">
-        <rdfs:subClassOf rdf:resource="&abd;TemporalAbnormality"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Elderly -->
-
-    <owl:Class rdf:about="&abd;Elderly">
-        <rdfs:subClassOf rdf:resource="&abd;People"/>
     </owl:Class>
     
 
@@ -497,14 +389,6 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#Floor -->
-
-    <owl:Class rdf:about="&abd;Floor">
-        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Friday -->
 
     <owl:Class rdf:about="&abd;Friday">
@@ -524,96 +408,10 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#Fridge -->
-
-    <owl:Class rdf:about="&abd;Fridge">
-        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#FrontYard -->
-
-    <owl:Class rdf:about="&abd;FrontYard">
-        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Furniture -->
-
-    <owl:Class rdf:about="&abd;Furniture"/>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#GoingOutForWork -->
-
-    <owl:Class rdf:about="&abd;GoingOutForWork">
-        <rdfs:subClassOf rdf:resource="&abd;Other"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#GoingToChurch -->
-
-    <owl:Class rdf:about="&abd;GoingToChurch">
-        <rdfs:subClassOf rdf:resource="&abd;Other"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Hot -->
 
     <owl:Class rdf:about="&abd;Hot">
         <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Indoor -->
-
-    <owl:Class rdf:about="&abd;Indoor">
-        <rdfs:subClassOf rdf:resource="&abd;Location"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Kitchen -->
-
-    <owl:Class rdf:about="&abd;Kitchen">
-        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Leisure -->
-
-    <owl:Class rdf:about="&abd;Leisure">
-        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Livingroom -->
-
-    <owl:Class rdf:about="&abd;Livingroom">
-        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Location -->
-
-    <owl:Class rdf:about="&abd;Location">
-        <rdfs:subClassOf rdf:resource="&abd;Context"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Microwave -->
-
-    <owl:Class rdf:about="&abd;Microwave">
-        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
     </owl:Class>
     
 
@@ -694,22 +492,6 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#NormalActivity -->
-
-    <owl:Class rdf:about="&abd;NormalActivity">
-        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Other -->
-
-    <owl:Class rdf:about="&abd;Other">
-        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#OtherContext -->
 
     <owl:Class rdf:about="&abd;OtherContext">
@@ -718,48 +500,10 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#Outdoor -->
-
-    <owl:Class rdf:about="&abd;Outdoor">
-        <rdfs:subClassOf rdf:resource="&abd;Location"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#People -->
-
-    <owl:Class rdf:about="&abd;People"/>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#PersonalNeed -->
 
     <owl:Class rdf:about="&abd;PersonalNeed">
         <rdfs:subClassOf rdf:resource="&abd;Activity"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#PreparingBreakfast -->
-
-    <owl:Class rdf:about="&abd;PreparingBreakfast">
-        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#PreparingDinner -->
-
-    <owl:Class rdf:about="&abd;PreparingDinner">
-        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#PreparingLunch -->
-
-    <owl:Class rdf:about="&abd;PreparingLunch">
-        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
     </owl:Class>
     
 
@@ -815,26 +559,10 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#Shed -->
-
-    <owl:Class rdf:about="&abd;Shed">
-        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Showering -->
 
     <owl:Class rdf:about="&abd;Showering">
         <rdfs:subClassOf rdf:resource="&abd;PersonalNeed"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#SpatialAbnormality -->
-
-    <owl:Class rdf:about="&abd;SpatialAbnormality">
-        <rdfs:subClassOf rdf:resource="&abd;AbnormalActivity"/>
     </owl:Class>
     
 
@@ -876,22 +604,6 @@
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="&abd;SeasonOfYear"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#StarttimeAbnormality -->
-
-    <owl:Class rdf:about="&abd;StarttimeAbnormality">
-        <rdfs:subClassOf rdf:resource="&abd;TemporalAbnormality"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#Stove -->
-
-    <owl:Class rdf:about="&abd;Stove">
-        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
     </owl:Class>
     
 
@@ -972,14 +684,6 @@
 
     <owl:Class rdf:about="&abd;Temperature">
         <rdfs:subClassOf rdf:resource="&abd;Context"/>
-    </owl:Class>
-    
-
-
-    <!-- http://abd.muse.massey.ac.nz#TemporalAbnormality -->
-
-    <owl:Class rdf:about="&abd;TemporalAbnormality">
-        <rdfs:subClassOf rdf:resource="&abd;AbnormalActivity"/>
     </owl:Class>
     
 
@@ -1078,14 +782,6 @@
     
 
 
-    <!-- http://abd.muse.massey.ac.nz#WatchingTV -->
-
-    <owl:Class rdf:about="&abd;WatchingTV">
-        <rdfs:subClassOf rdf:resource="&abd;Leisure"/>
-    </owl:Class>
-    
-
-
     <!-- http://abd.muse.massey.ac.nz#Wednesday -->
 
     <owl:Class rdf:about="&abd;Wednesday">
@@ -1173,39 +869,12 @@
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&abd;DomesticWork"/>
-            <rdf:Description rdf:about="&abd;Leisure"/>
-            <rdf:Description rdf:about="&abd;Other"/>
-            <rdf:Description rdf:about="&abd;PersonalNeed"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="&abd;Cold"/>
             <rdf:Description rdf:about="&abd;Cool"/>
             <rdf:Description rdf:about="&abd;Hot"/>
             <rdf:Description rdf:about="&abd;VeryCold"/>
             <rdf:Description rdf:about="&abd;VeryHot"/>
             <rdf:Description rdf:about="&abd;Warm"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&abd;Afternoon"/>
-            <rdf:Description rdf:about="&abd;Evening"/>
-            <rdf:Description rdf:about="&abd;Morning"/>
-            <rdf:Description rdf:about="&abd;Night"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&abd;Autumn"/>
-            <rdf:Description rdf:about="&abd;Spring"/>
-            <rdf:Description rdf:about="&abd;Summer"/>
-            <rdf:Description rdf:about="&abd;Winter"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
@@ -1220,9 +889,27 @@
             <rdf:Description rdf:about="&abd;Wednesday"/>
         </owl:members>
     </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;Autumn"/>
+            <rdf:Description rdf:about="&abd;Spring"/>
+            <rdf:Description rdf:about="&abd;Summer"/>
+            <rdf:Description rdf:about="&abd;Winter"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;Afternoon"/>
+            <rdf:Description rdf:about="&abd;Evening"/>
+            <rdf:Description rdf:about="&abd;Morning"/>
+            <rdf:Description rdf:about="&abd;Night"/>
+        </owl:members>
+    </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 3.2.3.22702) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
 

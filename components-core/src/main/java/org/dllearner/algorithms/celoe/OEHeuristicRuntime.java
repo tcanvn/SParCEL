@@ -40,9 +40,9 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class OEHeuristicRuntime implements Component, Comparator<OENode>{
 	
 	// strong penalty for long descriptions
-	private double expansionPenaltyFactor = 0.1;
+	private double expansionPenaltyFactor = 0.05;	//0.1
 	// bonus for being better than parent node
-	private double gainBonusFactor = 0.3;
+	private double gainBonusFactor = 0.2;	//0.3
 	// penalty if a node description has very many refinements since exploring 
 	// such a node is computationally very expensive
 	private double nodeRefinementPenalty = 0.0001;

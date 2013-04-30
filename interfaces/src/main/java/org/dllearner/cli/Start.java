@@ -102,7 +102,7 @@ public class Start {
 	private static Logger logger = Logger.getLogger(Start.class);
 	private static Logger rootLogger = Logger.getRootLogger();
 
-	private static ConfMapper confMapper = new ConfMapper();
+	private static ConfMapper confMapper = new ConfMapper(); 
 	
 	private Set<AbstractKnowledgeSource> sources;
 	private AbstractCELA la;

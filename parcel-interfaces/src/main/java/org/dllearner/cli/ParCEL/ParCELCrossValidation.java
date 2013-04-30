@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ParCEL.ParCELAbstract;
+import org.dllearner.algorithms.ParCEL.ParCELExtraNode;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
 import org.dllearner.algorithms.ParCELEx.ParCELExAbstract;
 import org.dllearner.cli.CrossValidation;
@@ -40,6 +41,8 @@ public class ParCELCrossValidation extends CrossValidation {
 	protected Stat learningTime;
 	protected Stat noOfPartialDef;
 	protected Stat partialDefinitionLength;
+	
+	protected Stat minimalDescriptionNeeded;
 
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -83,10 +86,10 @@ public class ParCELCrossValidation extends CrossValidation {
 		// get examples and shuffle them too
 		Set<Individual> posExamples = lp.getPositiveExamples();
 		List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
-		Collections.shuffle(posExamplesList, new Random(1));			
+		//Collections.shuffle(posExamplesList, new Random(1));			
 		Set<Individual> negExamples = lp.getNegativeExamples();
 		List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
-		Collections.shuffle(negExamplesList, new Random(2));
+		//Collections.shuffle(negExamplesList, new Random(2));
 
 		//----------------------
 		//end of setting up
@@ -244,6 +247,8 @@ public class ParCELCrossValidation extends CrossValidation {
 			fMeasureTraining = new Stat();
 			totalNumberOfDescriptions= new Stat();
 			
+			minimalDescriptionNeeded = new Stat();
+			
 			for(int currFold=0; (currFold<folds); currFold++) {
 
 				if (this.interupted) {
@@ -355,7 +360,17 @@ public class ParCELCrossValidation extends CrossValidation {
 				outputWriter("  learning time: " + df.format(learningMili/(double)1000) + "s");				
 				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated());
 				
-
+				
+				double minDescriptions = 0;
+				for (ParCELExtraNode pdef : ((ParCELAbstract)la).getReducedPartialDefinition()) {
+					if (pdef.getGenerationTime() > minDescriptions)
+						minDescriptions = pdef.getGenerationTime();
+				}
+				
+				outputWriter("  minimal number of descriptions needed: " + minDescriptions);
+				minimalDescriptionNeeded.addNumber(minDescriptions);
+									
+				
 				if (la instanceof ParCELAbstract) {
 					int pn = ((ParCELAbstract)la).getNoOfReducedPartialDefinition();
 					this.noOfPartialDef.addNumber(pn);
@@ -395,12 +410,13 @@ public class ParCELCrossValidation extends CrossValidation {
 				outputWriter("  length: " + statOutput(df, length, ""));
 				outputWriter("  F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 				outputWriter("  F-Measure: " + statOutput(df, fMeasure, "%"));
-				outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") + 
-						" -- correctness: " + statOutput(df, trainingCorrectnessStat, "%") +
-						"-- completeness: " + statOutput(df, trainingCompletenessStat, "%"));
-				outputWriter("  predictive accuracy on testing set: " + statOutput(df, accuracy, "%") +
-						" -- correctness: " + statOutput(df, testingCorrectnessStat, "%") +
-						"-- completeness: " + statOutput(df, testingCompletenessStat, "%"));
+				outputWriter("  accuracy on training set: " + statOutput(df, accuracyTraining, "%")); 
+				outputWriter("     correctness: " + statOutput(df, trainingCorrectnessStat, "%"));
+				outputWriter("     completeness: " + statOutput(df, trainingCompletenessStat, "%"));
+				outputWriter("  predictive accuracy on testing set: " + statOutput(df, accuracy, "%"));
+				outputWriter("     correctness: " + statOutput(df, testingCorrectnessStat, "%"));
+				outputWriter("     completeness: " + statOutput(df, testingCompletenessStat, "%"));
+				outputWriter("  minimal descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));
 				outputWriter("----------");
 				
 				
@@ -440,6 +456,9 @@ public class ParCELCrossValidation extends CrossValidation {
 			if (la instanceof ParCELExAbstract)
 				outputWriter("  terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
 
+			
+			//output for copying to excel/
+			
 			//runtime
 			runtimeAvg.addNumber(runtime.getMean());
 			runtimeMax.addNumber(runtime.getMax());

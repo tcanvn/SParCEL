@@ -83,6 +83,7 @@ public class Orthogonality {
 		//--------------------
 		//create conjunctions
 		//--------------------
+		/*
 		
 		//1. (A and B)
 		classSet.add(expr1);	//1
@@ -114,7 +115,7 @@ public class Orthogonality {
 			if (!reasoner.isSatisfiable(conjunction[i]))
 				return i+1;	//unsatisfiable
 		}
-		
+		*/
 		return 0;	//satisfiable
 	}
 	
@@ -128,13 +129,13 @@ public class Orthogonality {
 	 * 
 	 * @return Jaccard distance between (d1, d2). The smaller the distance is, the more overlap the concepts are. 
 	 */
-	public static double jaccardDistance(Description d1, Description d2) {
+	public static double jaccardDistance_old(Description d1, Description d2) {
 		Set<NamedKBElement> flatten_d1 = Orthogonality.flattenDescription(d1);
 		Set<NamedKBElement> flatten_d2 = Orthogonality.flattenDescription(d2); 
 		
 		int d1Size = flatten_d1.size();
 		int d2Size = flatten_d2.size();
-		
+		 
 		//calculate the number of common elements between 2 descriptions
 		flatten_d1.removeAll(flatten_d2);		
 		int noOfCommonElements = d1Size - flatten_d1.size();
@@ -157,6 +158,8 @@ public class Orthogonality {
 	
 	
 	
+	
+	
 	/**
 	 * This method "flattens" a description into atomic axioms
 	 * 
@@ -168,9 +171,10 @@ public class Orthogonality {
 			
 		Set<NamedKBElement> result = new HashSet<NamedKBElement>();
 		
-		if ((d instanceof Thing) || (d instanceof Nothing)) {
-			//do nothing
-		}		
+		if (d instanceof Thing)
+			result.add(new NamedClass(Thing.instance.getURI()));
+		if (d instanceof Nothing)		
+			; //do nothing
 		else if (d instanceof NamedClass) {
 			result.add((NamedClass)d);
 		}
@@ -213,6 +217,7 @@ public class Orthogonality {
 	 * 
 	 * @return Score of the counter partial definition
 	 */
+	/*
 	public static double fortificationScore(PelletReasoner reasoner, Description cpdef, Description concept,
 			int noOfCp, int noOfCn, int noOfPos, int noOfNeg, int commonPos, int commonNeg) 
 	{
@@ -222,14 +227,14 @@ public class Orthogonality {
 		Intersection intersection = new Intersection(concept, new Negation(cpdef));		
 		
 		if (reasoner.isSatisfiable(OWLAPIConverter.getOWLAPIDescription(intersection)))
-			return -1;
+			return 0;
 				
-		double score1 = noOfCn/(double)noOfNeg*cnFactor - noOfCp/(double)noOfPos*cpFactor;
+		double score1 = noOfCn/(double)noOfNeg*cnFactor - (noOfCp/(double)noOfPos)*cpFactor;
 		//double score2 = noOfCn/(double)noOfNeg*cnFactor - noOfCp/(double)noOfPos*cpFactor - commonPos/(double)noOfPos*commonFactor + commonNeg/(double)noOfNeg*commonFactor;
 		
 		return score1;
 	}
-	
+	*/
 	
 	
 	/**
@@ -347,7 +352,7 @@ public class Orthogonality {
 			//if (cpTmp.size() < fortificationCp.size() || cnTmp.size() < fortificationCn.size()) {
 			if ((accumulateCp != updatedCp) || (accumulateCn != updatedCn)) {
 				logger.debug(cpdefUsed + ". " + orgCpd.getId() + ". " 
-						+ CELOEFortifiedCrossValidation3PhasesFair.getCpdefString(orgCpd, null, null)
+						+ FortificationUtils.getCpdefString(orgCpd, null, null)
 						+ ", cp=" + cp + ", cn=" + cn
 						//+ ", removed pos=" + (fortificationCp.size() - cpTmp.size()) 
 						//+ ", removed neg=" + (fortificationCn.size() - cnTmp.size()));

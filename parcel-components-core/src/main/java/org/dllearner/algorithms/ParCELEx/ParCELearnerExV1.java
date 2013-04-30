@@ -279,7 +279,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 			}			
 			else {	//no splitter provided
 				//i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1);
+				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1, maxNoOfSplits);
 			}
 						
 			refinementOperatorPool.getFactory().setUseDisjunction(false);

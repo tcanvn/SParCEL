@@ -92,6 +92,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	 * examples can be discard (uncovered)
 	 */
 	private int uncoveredPositiveExampleAllowed = 0;
+	
+	private double noiseAllowed; // = this.noisePercentage/100d;
 
 	
 	/**
@@ -223,8 +225,12 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// this will be revise later using least common super class of all observations
 		startClass = Thing.instance;
 
-		this.uncoveredPositiveExampleAllowed = (int) Math.ceil(getNoisePercentage()
-				* positiveExamples.size());
+		//TODO check this - what is noise? for positive or negative examples?
+		//----------------------
+		//this.uncoveredPositiveExampleAllowed = (int) Math.ceil(getNoisePercentage() * positiveExamples.size());
+		this.uncoveredPositiveExampleAllowed = 0;		
+		noiseAllowed = this.noisePercentage/100d;
+		//----------------------
 
 		// initial the existing uncovered positive examples
 		((ParCELPosNegLP) this.learningProblem)
@@ -270,12 +276,12 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 			} 
 			else { // no splitter provided create an object pool
 				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy,
-						startClass, numberOfWorkers + 1);
+						startClass, numberOfWorkers + 1, maxNoOfSplits);
 			}
 
 			refinementOperatorPool.getFactory().setUseDisjunction(false);
 			refinementOperatorPool.getFactory().setUseNegation(true);
-
+			refinementOperatorPool.getFactory().setUseHasValue(this.useHasValue);
 		}
 
 		baseURI = reasoner.getBaseURI();
@@ -911,5 +917,15 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	public int getCurrentlyMaxExpansion() {
 		return this.currentMaxHorizExp;
 	}
+
+	public double getNoiseAllowed() {
+		return noiseAllowed;
+	}
+
+	public void setNoiseAllowed(double noiseAllowed) {
+		this.noiseAllowed = noiseAllowed;
+	}
+	
+	
 	
 }

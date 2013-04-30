@@ -46,7 +46,7 @@ public class ConfFileOption {
 	private int intValue;
 	private double doubleValue;
 	private Set<String> setValues;
-	private List<StringTuple> listTuples;
+	private List<StringTuple> listTuples; 
 	
 	public ConfFileOption(String option, String value) {
 		this(option, null, value);
