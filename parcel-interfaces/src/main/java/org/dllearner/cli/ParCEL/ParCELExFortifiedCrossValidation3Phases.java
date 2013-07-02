@@ -11,6 +11,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.Fortification.FortificationUtils;
+import org.dllearner.algorithms.Fortification.JaccardSimilarity;
 import org.dllearner.algorithms.ParCEL.ParCELAbstract;
 import org.dllearner.algorithms.ParCEL.ParCELExtraNode;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
@@ -851,12 +853,26 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					totalCPDefLength += cpdef.getLength();					
 					
 					String changed = "";
+					if (cpChanged || cnChanged) {
+						changed = "(" + (cpChanged?"-":"") + (cnChanged?"+":"") + ")";
+
+						outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(negCpdef, baseURI, prefixes)
+								+ ", cp=" + rs.hasType(cpdef, curFoldPosTestSet)
+								+ ", cn=" + rs.hasType(cpdef, curFoldNegTestSet));
+					}
+					else if (logger.isDebugEnabled()) {
+						logger.debug(count++ + changed + ". " + FortificationUtils.getCpdefString(negCpdef, baseURI, prefixes)
+								+ ", cp=" + rs.hasType(cpdef, curFoldPosTestSet)
+								+ ", cn=" + rs.hasType(cpdef, curFoldNegTestSet));
+					}
+					/*
 					if (cpChanged || cnChanged)
 						changed = "(" + (cpChanged?"-":"") + (cnChanged?"+":"") + ")";
 					
 					outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(negCpdef, baseURI, prefixes)
 							+ ", cp=" + rs.hasType(cpdef, curFoldPosTestSet)
-							+ ", cn=" + rs.hasType(cpdef, curFoldNegTestSet));	
+							+ ", cn=" + rs.hasType(cpdef, curFoldNegTestSet));
+					*/	
 				}
 								
 				outputWriter( " * Blind fortifcation summary: cp=" + cpdefPositiveCovered + " --- cn=" + cpdefNegativeCovered);
@@ -950,6 +966,15 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					fmeasurePercentageFortifyStepStat[INDEX][i].
 					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
 				}
+				
+				/* error: minCpdef has not assigned the value
+				for (int i=0; i<minCpdef; i++) {
+					outputWriter((i+1) + ": " + multiStepFortificationResult[INDEX].fortificationAccuracyStepByStep[i] 
+						+ "\t" + multiStepFortificationResult[INDEX].fortificationCorrectnessStepByStep[i]
+						+ "\t" + multiStepFortificationResult[INDEX].fortificationCompletenessStepByStep[i]						                                                                                
+					);
+				}
+				*/
 
 
 				//------------------------------------------------
@@ -981,6 +1006,14 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
 				}
 
+				/* error: minCpdef has not assigned the value
+				for (int i=0; i< minCpdef; i++) {
+					outputWriter((i+1) + ": " + multiStepFortificationResult[INDEX].fortificationAccuracyStepByStep[i] 
+						+ "\t" + multiStepFortificationResult[INDEX].fortificationCorrectnessStepByStep[i]
+						+ "\t" + multiStepFortificationResult[INDEX].fortificationCompletenessStepByStep[i]						                                                                                
+					);
+				}
+				*/
 
 				//------------------------------------------------
 				/// 3. Fortification - FORTIFICATION VALIDATION				
@@ -1289,6 +1322,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				}				
 
 				
+				
 				outputWriter("----------------------");
 				
 				int[] noOfCpdefMultiStep = FortificationUtils.getMultiStepFortificationStep(counterPartialDefinitions.size());
@@ -1363,7 +1397,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				// of the CURRENT fold
 				//--------------------------------
 				outputWriter("Fold " + currFold + "/" + folds + ":");
-				outputWriter("  concept: " + concept);
+				//outputWriter("  concept: " + concept);
 				
 				outputWriter("  training: " + trainingCorrectPosClassified + "/" + trainingPosSize + 
 						" positive and " + trainingCorrectNegClassified + "/" + trainingNegSize + " negative examples");				
@@ -1426,6 +1460,38 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				outputWriter("  number of cpdef use in the label fortification: " + noOfSelectedCpdef);
 				outputWriter("  avg. training coverage of the selected cpdef. in the label fortification: " + df.format(avgTrainingCoverageSelectedCpdef));
 
+				//=============================================================
+				outputWriter("---------------------------------------------");								
+				outputWriter("FULL-STEP fortification with FORTIFICATION STRATEGIES: ");			
+				outputWriter("Metrics: Accuracy, Correctness, Completeness");
+				outputWriter("");
+				/*
+				String strategiesNamesStr = "Strategies: ";
+				for (int i=0; i<noOfStrategies; i++) 	//6 strategies
+					strategiesNamesStr += FortificationUtils.strategyNames[i] + ", ";
+				outputWriter(strategiesNamesStr + ":");
+				*/
+				
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies
+					outputWriter(FortificationUtils.strategyNames[i] + ":");
+					for (int j=0; j<minCpdef; j++) {
+						outputWriter((j+1) + ": (" + multiStepFortificationResult[i].fortificationAccuracyStepByStep[j] + ")\t"
+								+ df.format(accuracyFullStepStat[i][j].getMean()) + "\t"									
+								+ df.format(accuracyFullStepStat[i][j].getStandardDeviation()) + "\t"
+								+ "(" + multiStepFortificationResult[i].fortificationCorrectnessStepByStep[j] + ")\t"
+								+ df.format(correctnessFullStepStat[i][j].getMean()) + "\t"
+								+ df.format(correctnessFullStepStat[i][j].getStandardDeviation()) + "\t"	
+								+ "(" + multiStepFortificationResult[i].fortificationCompletenessStepByStep[j] + ")\t"
+								+ df.format(completenessFullStepStat[i][j].getMean()) + "\t"
+								+ df.format(completenessFullStepStat[i][j].getStandardDeviation())
+						);
+					}
+					outputWriter("\n");
+				}
+
+				
+				
+				//=============================================================
 				//----------------------------------------------
 				//output fold accumulative stat. information
 				//----------------------------------------------
@@ -1442,6 +1508,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				outputWriter("  avg cpdef length: " + statOutput(df, avgCpdefLengthStat, ""));				
 				outputWriter("  avg. def. length: " + statOutput(df, length, ""));
 				
+				outputWriter("  avg. no of ");
 				outputWriter("  avg. label fortified def. length: " + statOutput(df, labelFortifiedDefinitionLengthStat, ""));
 				outputWriter("  avg. length of the cpdefs used in the label fortification: " + statOutput(df, avgLabelCpdefLengthStat, ""));
 				
@@ -1463,6 +1530,11 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 						" -- fortified correctness: " + statOutput(df, correctnessBlindFortifyStat, "%") +
 						"-- fortified completeness: " + statOutput(df, completenessBlindFortifyStat, "%"));
 				
+				
+				
+
+				
+				//fortification by PERCENTAGE
 				for (int i=0; i< noOfStrategies; i++) {					
 					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ":");
 					
@@ -1539,7 +1611,7 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 			outputWriter("  avg. def. length: " + statOutput(df, length, ""));
 			
 			outputWriter("  avg. label fortified def. length: " + statOutput(df, labelFortifiedDefinitionLengthStat, ""));
-			outputWriter("  avg. cpdef used in the label fortification: " + statOutput(df, avgLabelCpdefLengthStat, ""));
+			outputWriter("  avg. cpdef used in the label fortification: " + statOutput(df, noOfLabelFortifySelectedCpdefStat, ""));
 			outputWriter("  F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 			outputWriter("  F-Measure on test set: " + statOutput(df, fMeasure, "%"));
 			outputWriter("  F-Measure on test set fortified: " + statOutput(df, fmeasureLabelFortifyStat, "%"));
@@ -1558,6 +1630,54 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 					"\n\t-- fortified correctness: " + statOutput(df, correctnessBlindFortifyStat, "%") +
 					"\n\t-- fortified completeness: " + statOutput(df, completenessBlindFortifyStat, "%"));
 
+			
+			//------------------------------------------------------------
+			//compute cut-off point and the metrics at the cut-off point
+			//------------------------------------------------------------
+			int cutOffPoint = 0;
+			//double cutOffAvg[][], cutOffDev[][];
+			//cutOffAvg = new double[3][noOfStrategies];	//0: accuracy, 1: correctness, 2: completeness
+			//cutOffDev = new double[3][noOfStrategies];
+			
+			//cut-off point is the max number of the labelled fortification definitions		
+			if (noOfLabelFortifySelectedCpdefStat.getMean() > 0)	//this is for a weird side-affect of the floating point such that the getMax return a very small number >0 even if the acutuall value is zero 
+				cutOffPoint = (int)Math.round(Math.ceil(noOfLabelFortifySelectedCpdefStat.getMax()));								
+		
+			//outputWriter("\n  CUT-OFF point computation: " + noOfLabelFortifySelectedCpdefStat.getMax());
+			//outputWriter("\n  test: " + Math.round(Math.ceil(noOfLabelFortifySelectedCpdefStat.getMean())));
+			outputWriter("\n  CUT-OFF point computation: " + cutOffPoint);
+			if (cutOffPoint == 0) {
+				outputWriter("\tNo fortifying definition is used, the accuracy is unchanged");
+				outputWriter("\t\taccuracy: " + df.format(accuracy.getMean()) + ", " + df.format(accuracy.getStandardDeviation()) + 
+						"; correctness: " +	df.format(testingCorrectnessStat.getMean()) + ", " + df.format(testingCorrectnessStat.getStandardDeviation()) + 
+						"; completeness: " + df.format(testingCompletenessStat.getMean()) + ", " + df.format(testingCompletenessStat.getStandardDeviation()));
+			}
+			else {
+				cutOffPoint--;
+				for (int i=0; i < noOfStrategies; i++) {
+					outputWriter("\t" + FortificationUtils.strategyNames[i] + ":");
+					outputWriter("\t  accuracy: " + df.format(accuracyFullStepStat[i][cutOffPoint].getMean()) + 
+							", " + df.format(accuracyFullStepStat[i][cutOffPoint].getStandardDeviation()) +
+							"; correctness: " + df.format(correctnessFullStepStat[i][cutOffPoint].getMean()) +
+							", " + df.format(correctnessFullStepStat[i][cutOffPoint].getStandardDeviation()) +
+							"; completeness: " + df.format(completenessFullStepStat[i][cutOffPoint].getMean()) +
+							", " + df.format(completenessFullStepStat[i][cutOffPoint].getStandardDeviation()) 
+							);
+					/*
+					cutOffAvg[0][i] = accuracyFullStepStat[i][cutOffPoint].getMean();							
+					cutOffAvg[1][i] = correctnessFullStepStat[i][cutOffPoint].getMean();
+					cutOffAvg[2][i] = completenessFullStepStat[i][cutOffPoint].getMean();
+					
+					cutOffDev[0][i] = accuracyFullStepStat[i][cutOffPoint].getStandardDeviation();
+					cutOffDev[1][i] = correctnessFullStepStat[i][cutOffPoint].getStandardDeviation();
+					cutOffDev[2][i] = completenessFullStepStat[i][cutOffPoint].getStandardDeviation();
+					*/							
+				}
+			}
+			//end of cut-off point processing
+			
+			outputWriter("");
+			
 			for (int i=0; i< noOfStrategies; i++) {
 				
 				outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ":");
@@ -1589,8 +1709,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 				
 			}
 
-			outputWriter("  total no of counter partial definition: " + statOutput(df, noOfCpdefStat, ""));
-			outputWriter("  avg. no of counter partial definition used in label fortification: " + statOutput(df, noOfLabelFortifySelectedCpdefStat,""));
+			//outputWriter("  total no of counter partial definition: " + statOutput(df, noOfCpdefStat, ""));
+			//outputWriter("  avg. no of counter partial definition used in label fortification: " + statOutput(df, noOfLabelFortifySelectedCpdefStat,""));
 			
 			outputWriter("  no of cpdef used in multi-step fortification:");
 			outputWriter("\t5%: " + statOutput(df, noOfCpdefUsedMultiStepFortStat[0], ""));
@@ -2037,8 +2157,8 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 
 		}
 
-		if (la instanceof ParCELExAbstract)
-			outputWriter("terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
+		//if (la instanceof ParCELExAbstract)
+		//	outputWriter("terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
 		
 		
 		//reset the set of positive and negative examples for the learning problem for further experiment if any 
@@ -2047,120 +2167,6 @@ public class ParCELExFortifiedCrossValidation3Phases extends CrossValidation {
 		
 
 	}	//constructor
-
-
-	/*
-	private String getOrderUnit(int order) {
-		switch (order) {
-			case 1: return "st";
-			case 2: return "nd";
-			case 3: return "rd";
-			default: return "th";
-		}
-	}
-	*/
-	
-	/*
-	@Override
-	protected void outputWriter(String output) {
-		logger.info(output);
-
-		if (writeToFile)
-			Files.appendToFile(outputFile, output + "\n");
-	}
-	
-	
-	class URIComparator implements Comparator<Individual> {
-
-		@Override
-		public int compare(Individual o1, Individual o2) {
-			return o1.getURI().compareTo(o2.getURI());
-		}
-		
-	}
-	*/
-	
-	/*	
-	class ParCELExtraNodeNegCoverageComparator implements Comparator<ParCELExtraNode> {
-
-		@Override
-		public int compare(ParCELExtraNode node1, ParCELExtraNode node2) {
-			int coverage1 = node1.getCoveredNegativeExamples().size();
-			int coverage2 = node2.getCoveredNegativeExamples().size();
-			
-			if (coverage1 > coverage2)
-				return -1;
-			else if (coverage1 < coverage2)
-				return 1;
-			else
-				return new ConceptComparator().compare(node1.getDescription(), node2.getDescription());
-				
-		}
-		
-	}
-	*/
-
-
-
-	/*
-	class CoverageComparator implements Comparator<CELOE.PartialDefinition> { 
-		@Override
-		public int compare(CELOE.PartialDefinition p1, CELOE.PartialDefinition p2) {
-			if (p1.getCoverage() > p2.getCoverage())
-				return -1;
-			else if (p1.getCoverage() < p2.getCoverage())
-				return 1;
-			else
-				return new ConceptComparator().compare(p1.getDescription(), p2.getDescription());
-				
-		}
-	}
-	*/
-	
-	/**
-	 * Sort descreasingly 
-	 * 
-	 * @author An C. Tran
-	 *
-	 */
-	/*
-	class AdditionalValueComparator implements Comparator<CELOE.PartialDefinition> {		
-		int index = 0;
-		boolean descending;
-		
-		public AdditionalValueComparator(int index) {
-			this.index = index;
-			this.descending = true;
-		}
-		
-
-		public AdditionalValueComparator(int index, boolean descending) {
-			this.index = index;
-			this.descending = descending;
-		}
-
-		
-		@Override
-		public int compare(CELOE.PartialDefinition pdef1, CELOE.PartialDefinition pdef2) {
-			if (pdef1.getAdditionValue(index) > pdef2.getAdditionValue(index)) {
-				if (this.descending)
-					return -1;
-				else
-					return 1;
-			}
-			else if (pdef1.getAdditionValue(index) < pdef2.getAdditionValue(index)) {
-				if (this.descending)
-					return 1;
-				else
-					return -1;
-			}
-			else
-				return new ConceptComparator().compare(pdef1.getDescription(), pdef2.getDescription());
-			
-		}
-		
-	}
-	 */
 
 }
 

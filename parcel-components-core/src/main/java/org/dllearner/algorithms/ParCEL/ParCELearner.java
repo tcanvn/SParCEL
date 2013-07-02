@@ -527,6 +527,9 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 			int uncoveredPositiveExamplesRemoved;
 			int uncoveredPositiveExamplesSize;
 			
+			//re-calculate the generation time of pdef
+			def.setGenerationTime(def.getGenerationTime() - miliStarttime);
+			
 			synchronized (uncoveredPositiveExamples) {
 				uncoveredPositiveExamplesRemoved = this.uncoveredPositiveExamples.size();
 				this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());
@@ -538,7 +541,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 			if (uncoveredPositiveExamplesRemoved > 0) {
 
 				// set the generation time for the new partial definition
-				def.setGenerationTime(System.currentTimeMillis() - miliStarttime);
+				//def.setGenerationTime(System.currentTimeMillis() - miliStarttime);	//this is set by workers
 				synchronized (partialDefinitions) {
 					partialDefinitions.add(def);
 				}

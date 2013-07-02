@@ -71,6 +71,7 @@ public class CrossValidation {
 	
 	protected Stat totalNumberOfDescriptions;
 	protected Stat minimalDescriptionNeeded;
+	protected Stat learningTimeForBestDescription;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -224,6 +225,7 @@ public class CrossValidation {
 			totalNumberOfDescriptions = new Stat();
 			
 			minimalDescriptionNeeded = new Stat();
+			learningTimeForBestDescription = new Stat();
 			
 
 			// run the algorithm
@@ -340,8 +342,9 @@ public class CrossValidation {
 				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated());
 				
 				if (la instanceof CELOE) {
-					outputWriter("   minimal number of descriptions needed: " + ((CELOE)la).getSearchtreeSizeForBestDescription());
-					minimalDescriptionNeeded.addNumber(((CELOE)la).getSearchtreeSizeForBestDescription());					
+					//outputWriter("   minimal number of descriptions needed: " + ((CELOE)la).getSearchtreeSizeForBestDescription());
+					minimalDescriptionNeeded.addNumber(((CELOE)la).getSearchtreeSizeForBestDescription());
+					learningTimeForBestDescription.addNumber(((CELOE)la).getLearningtimeForBestDescription()/(double) 1000000000);
 				}				
 				
 				outputWriter("----------");
@@ -358,9 +361,13 @@ public class CrossValidation {
 				outputWriter("    correctness: " + statOutput(df, testingCorrectnessStat, "%"));
 				outputWriter("    completeness: " + statOutput(df, testingCompletenessStat, "%"));
 				
+				/*
 				if (la instanceof CELOE) {
-					outputWriter("   minimal number of descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));								
+					outputWriter("   minimal number of descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));
+					outputWriter("   learning time for best description: " + statOutput(df, learningTimeForBestDescription, ""));
+					
 				}
+				*/
 				
 				outputWriter("----------");
 				//sleep after each run (fer MBean collecting information purpose)

@@ -165,9 +165,9 @@ public class ParCELWorker extends ParCELWorkerAbstract {
 				if (addedNode != null) {
 
 					// PARTIAL DEFINITION (correct and not necessary to be complete)
-					if (addedNode.getCorrectness() >= 1.0d - learner.getNoiseAllowed()) {
-						//addedNode.setGenerationTime(System.currentTimeMillis() - starttime);
-						addedNode.setGenerationTime(learner.getTotalDescriptions());
+					if (addedNode.getCorrectness() >= 1.0d - learner.getNoiseAllowed()) { 
+						addedNode.setGenerationTime(System.currentTimeMillis());
+						addedNode.setExtraInfo(learner.getTotalDescriptions());
 						definitionsFound.add(addedNode);
 					}
 					// DESCRIPTION

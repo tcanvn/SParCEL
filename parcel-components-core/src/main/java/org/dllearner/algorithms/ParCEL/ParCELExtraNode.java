@@ -17,6 +17,7 @@ import org.dllearner.core.owl.Individual;
 public class ParCELExtraNode extends ParCELNode {
 
 	protected double generationTime = Double.MIN_VALUE; // time in ms that the node was generated
+	protected double extraInfo = Double.MIN_VALUE;
 	protected int type = -1;
 
 	/**
@@ -139,6 +140,15 @@ public class ParCELExtraNode extends ParCELNode {
 		this.generationTime = d;
 	}
 
+	public double getExtraInfo() {
+		return extraInfo;
+	}
+
+	public void setExtraInfo(double d) {
+		this.extraInfo = d;
+	}
+ 
+	
 	public void setType(int t) {
 		this.type = t;
 	}

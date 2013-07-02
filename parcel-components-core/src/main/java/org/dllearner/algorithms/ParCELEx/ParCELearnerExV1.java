@@ -542,7 +542,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 					logger.info("Uncovered positive examples left " + this.uncoveredPositiveExamples.size() + " - " + ParCELStringUtilities.replaceString(this.uncoveredPositiveExamples.toString(), this.baseURI, this.prefix));					
 				}
 						
-				logger.info("Compacted partial definition set");
+				logger.info("**Reduced partial definitions:");
 				TreeSet<ParCELExtraNode> compactedDefinitions = (TreeSet<ParCELExtraNode>) this.getReducedPartialDefinition();
 				this.noOfCompactedPartialDefinition = compactedDefinitions.size();
 				int count = 1;

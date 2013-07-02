@@ -124,6 +124,7 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 	private boolean allPosCovered = false;
 	
 	private long searchtreeSizeForBestDescription = 0;
+	private long learningtimeForBestDescription = 0;
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
@@ -215,7 +216,7 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 	private double maxDepth = 7;
 
 	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
-	private boolean stopOnFirstDefinition = false;	
+	protected boolean stopOnFirstDefinition = false;	
 	
 	@ConfigOption(name = "useHasValue", defaultValue="false", description="Use has value")
 	private boolean useHasValue = false;
@@ -534,8 +535,15 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 				expressionTestCountLastImprovement = expressionTests;
 				timeLastImprovement = System.nanoTime();
-				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()) + " (" + this.getTotalNumberOfDescriptionsGenerated() + ")");
-				this.searchtreeSizeForBestDescription = this.getTotalDescriptions();
+				
+				if (this.searchtreeSizeForBestDescription < this.getTotalNumberOfDescriptionsGenerated())
+					this.searchtreeSizeForBestDescription = this.getTotalNumberOfDescriptionsGenerated();
+				this.setLearningtimeForBestDescription(System.nanoTime() - nanoStartTime);
+				
+				if (logger.isInfoEnabled())
+					logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+				else 
+					logger.debug("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()) + " (" + this.getTotalNumberOfDescriptionsGenerated() + " @" + this.getLearningtimeForBestDescription()/(double) 1000000000 +")");
 			}
 
 			// chose best node according to heuristics
@@ -693,10 +701,11 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 		}
 		
 		//if the noise is enable and the new description is correct (i.e. correct + noise description)
-		if (accuracy > 1) {
+		if (accuracy >= 1) {
 			//System.out.println("** Partial definition found: " + description.toManchesterSyntaxString(baseURI, prefixes) +
 			//		", acc:" + dfPercent.format(accuracy-1));
-			accuracy -= 1;	
+			if (accuracy > 1)
+				accuracy -= 1;	
 			
 			double coverage = (accuracy * (posSize + negSize) - negSize)/posSize;
 			partialDefinitions.add(new PartialDefinition(description, coverage));	
@@ -745,7 +754,9 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 			if(accuracy > bestAccuracy) {
 				bestAccuracy = accuracy;
 				bestDescription = description;
-				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription) + " (" + this.getTotalNumberOfDescriptionsGenerated() + ")"); // + getTemporaryString(bestDescription)); 
+				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription) + " (" + this.getTotalNumberOfDescriptionsGenerated() + ")"); // + getTemporaryString(bestDescription));
+				if (this.searchtreeSizeForBestDescription < this.getTotalNumberOfDescriptionsGenerated())
+					this.searchtreeSizeForBestDescription = this.getTotalNumberOfDescriptionsGenerated();
 			}
 			return true;
 		} 
@@ -959,12 +970,12 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 		String str = "";
 		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
 			// temporary code
-			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
-			} else {
+			//if(learningProblem instanceof PosNegLPStandard) {
+			//	str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
+			//} else {
 				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 //				System.out.println(ed);
-			}
+			//}
 			current++;
 		}
 		return str;
@@ -1352,7 +1363,18 @@ public class CELOE extends AbstractCELA implements CELOEMBean {
 			long searchtreeSizeForBestDescription) {
 		this.searchtreeSizeForBestDescription = searchtreeSizeForBestDescription;
 	}
+	
+	public void setLearningtimeForBestDescription(
+			long learningtimeForBestDescription) {
+		this.learningtimeForBestDescription = learningtimeForBestDescription;
+	}
 
-	
-	
+	public long getLearningtimeForBestDescription() {
+		return learningtimeForBestDescription;
+	}
+
+	public boolean getStopOnFirstDefinition() {
+		return this.stopOnFirstDefinition;
+	}
+
 }

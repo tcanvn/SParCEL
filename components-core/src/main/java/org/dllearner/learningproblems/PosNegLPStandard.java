@@ -538,6 +538,7 @@ public class PosNegLPStandard extends PosNegLP {
 
 		double acc = (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
 		
+		//marked as a partial definition
 		if (noise > 0 && notCoveredNeg == negNo) {
 			acc += 1;
 			

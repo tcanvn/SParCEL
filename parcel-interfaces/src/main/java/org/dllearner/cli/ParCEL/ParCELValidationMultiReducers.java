@@ -128,7 +128,7 @@ public class ParCELValidationMultiReducers {
 		else if (reducers.size() == 0)
 			reducers.add(parcel.getReducer());
 
-		//initialise the validation data
+		//initialise the validation data for each reducer
 		for (ParCELReducer reducer : reducers)
 			validationData.put(reducer, new ParCELvaliadationData());
 
@@ -137,7 +137,7 @@ public class ParCELValidationMultiReducers {
 		//----------------------
 
 		//hold all partial definitions for further analysis
-		Map<Description, Set<FoldInfor>> allPartialDefinitions = new TreeMap<Description, Set<FoldInfor>>(new ConceptComparator());
+		//Map<Description, Set<FoldInfor>> allPartialDefinitions = new TreeMap<Description, Set<FoldInfor>>(new ConceptComparator());
 
 		//-----------------------------------
 		//start k-folds cross validation
@@ -316,8 +316,8 @@ public class ParCELValidationMultiReducers {
 				//---------------------
 
 				//calculate prediction-model-score for all partial definition generated of the current fold
-				Map<Description, Double> predictionScores = ParCELPredictionModelScoring.scoringComplex(
-						foldPartialDefinitions, trainingPos);
+				//Map<Description, Double> predictionScores = ParCELPredictionModelScoring.scoringComplex(
+				//		foldPartialDefinitions, trainingPos);
 
 				//----------------------------------------------------------
 				// calculate fold information for each partial definition
@@ -343,7 +343,7 @@ public class ParCELValidationMultiReducers {
 					PhaseInfor testingInfor = new PhaseInfor(testingPos.size(),
 							testingNeg.size(), testingCoveredPos.size() , testingCoveredNeg.size());
 					
-					
+					/*
 					//2. add the partial definitions of the current fold into all partial definition set with the above information 
 					if (!allPartialDefinitions.containsKey(def.getDescription())) {
 						//if the description is in the list before, just add the evaluation info for that description
@@ -355,7 +355,7 @@ public class ParCELValidationMultiReducers {
 						//if the description is in the set of partial definition before, just add new evaluation info
 						allPartialDefinitions.get(def.getDescription()).add(new FoldInfor(currFold, trainingInfor, testingInfor));					
 					}
-					
+					*/
 					//update the max partial definition length
 					if (maxPartialDefinitionLength < def.getDescription().getLength())
 						maxPartialDefinitionLength = def.getDescription().getLength();
@@ -363,6 +363,7 @@ public class ParCELValidationMultiReducers {
 				}	//for each partial definition in the list of all partial definitions of the current fold
 
 				
+				/*
 				//store the prediction score of the current fold into all partial definitions set
 				for (Description des : predictionScores.keySet()) {
 					//if the description is in the list of all partial definition 
@@ -391,7 +392,7 @@ public class ParCELValidationMultiReducers {
 					
 					
 				}	//for each description in the all partial definitions set of the current fold - update pScore
-				
+				*/
 			}	//for each reducers
 
 		}	//for k folds
@@ -431,7 +432,7 @@ public class ParCELValidationMultiReducers {
 		
 		//display all partial definitions information produced in the validation group by partial definition
 		//and calculate the actual model score for the partial definition as well
-		
+		/*
 		outputWriter("=======================================");
 		outputWriter("Partial definitions");
 		outputWriter("=======================================");
@@ -459,10 +460,12 @@ public class ParCELValidationMultiReducers {
 						", pScore=" + df.format(info.getPredScore()) +
 						(info.getSelectedByReducers().size() > 0 ? (", selected-by: " + info.getSelectedBy()):""));
 			}
+			
 		}
+		*/
 
 		//display all partial definitions information produced in the validation group by partial definition
-
+		/*
 		for (int curFold=0; curFold<folds; curFold++) {
 			outputWriter("------------ " + curFold + " --------------");
 
@@ -485,7 +488,7 @@ public class ParCELValidationMultiReducers {
 				}
 			}
 		}
-
+		*/
 		//post-processing to find out the best partial definition set
 
 

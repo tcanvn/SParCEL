@@ -84,6 +84,10 @@ public class CLI {
 	@ConfigOption(name = "fortificationNoise", defaultValue="98%", description="Indicate minimal coverage for fortification definitions")
 	private double fortificationNoise = 98;
 
+	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="-1", description="Stop when the ist definition found. This is mainly for fortification, otherwise, set it in CELOE component (-1: unset, 1: yes, 0: no)")
+	private int stopOnFirstDefinition = -1;
+
+	
 	@ConfigOption(name = "reducers", defaultValue="null", description="Use this indicate the reducer (used for ParCEL and ParCELEx only)")
 	private Set<ParCELReducer> reducers = null;
 
@@ -155,9 +159,11 @@ public class CLI {
 						+ ", accAward=" + h.getAccuracyAwardFactor()
 						+ "\n\\\\-----------------------------------");
 
-				//---------------------------
+				
+				//------------------------------------------------------
 				//with FORTIFICATION
-				//---------------------------
+				//	no multiple reducers supported with FORTIFICATION
+				//------------------------------------------------------
 				if (this.fortification) {
 					logger.info("Cross validation with FORTIFICATION");
 					
@@ -172,10 +178,20 @@ public class CLI {
 				//no FORTIFICATION
 				//---------------------------
 				else {	//without fortification, the cross-validation is similar between ParCEL and ParCEL-Ex
-					logger.info("Cross validation WITHOUT FORTIFICATION");					
-					new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns); 
+					
+					logger.info("Cross validation WITHOUT FORTIFICATION");
+					
+					//check multiple reducers options
+					if (this.reducers == null)
+						new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns); 
+					else {
+						String reducersStr = "";
+						for (ParCELReducer r : reducers)
+							reducersStr += r.getClass().getSimpleName() + "; ";
+						logger.info("* Multiple reducers: " + reducersStr);
+						new ParCELValidationMultiReducers(la, lp, rs, nrOfFolds, false, noOfRuns, reducers);
+					}
 				}
-				
 				//int noOfFolds[] = {10}; 	//{4, 5, 8, 10};
 				//for (int f=0; f < noOfFolds.length; f++) {				
 					//new ParCELFortifiedCrossValidationOrtho2Blind(la, lp, rs, noOfFolds[f], false, noOfRuns);					
@@ -210,7 +226,7 @@ public class CLI {
 					if (this.fortification) {
 						logger.info("Cross validation with FORTIFICATION");
 						new CELOEFortifiedCrossValidation3PhasesFair(la, lp, rs, nrOfFolds, false, noOfRuns, 
-								fortificationNoise, fortificationTimeout, fairComparison);
+								fortificationNoise, fortificationTimeout, fairComparison, stopOnFirstDefinition);
 					}
 					else {
 						logger.info("Cross validation with NO FORTIFICATION");
@@ -400,5 +416,14 @@ public class CLI {
 		this.fortificationNoise = fortificationNoise;
 	}
 
+	public int getStopOnFirstDefinition() {
+		return stopOnFirstDefinition;
+	}
+
+	public void setStopOnFirstDefinition(int stopOnFirstDefinition) {
+		this.stopOnFirstDefinition = stopOnFirstDefinition;
+	}
+
+	
 	
 }

@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri id="User Entered Import Resolution" name="file:../examples/showering-duration/abd.muse.massey.ac.nz_original.owl" uri="abd.muse.massey.ac.nz_original.owl"/>
+    <uri id="User Entered Import Resolution" name="file:../examples/showering-duration/abd.muse.massey.ac.nz.owl_original" uri="abd.muse.massey.ac.nz_original.owl"/>
+    <uri id="User Entered Import Resolution" name="file:../examples/showering-duration/abd.muse.massey.ac.nz.owl_large" uri="abd.muse.massey.ac.nz_large.owl"/>
+    <uri id="User Entered Import Resolution" name="file:../examples/showering-duration/abd.muse.massey.ac.nz_hasDurationOnly.owl" uri="abd.muse.massey.ac.nz_hasDurationOnly.owl"/>
     <uri id="User Entered Import Resolution" name="file:../examples/showering-duration/abd.muse.massey.ac.nz.owl" uri="abd.muse.massey.ac.nz.owl"/>
     <uri id="User Entered Import Resolution" name="file:../examples/mu-bus/mu-bus12-rich-double.owl" uri="mu-bus12-rich-double.owl"/>
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_simple.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd%20(copy).muse.massey.ac.nz.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_simple2.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_2.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1363665256473" name="http://uca2.abd.muse.massey.ac.nz" uri="uca2_300.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_original_almost.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd%20(copy).muse.massey.ac.nz_hasDurationOnly.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_hasDurationOnly.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_large.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_simple2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd.muse.massey.ac.nz_original.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://abd.muse.massey.ac.nz" uri="abd%20(copy).muse.massey.ac.nz_original.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_3.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_original.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_3%20(copy).owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_2%20(An%20Cong%20Tran's%20conflicted%20copy%202013-04-21).owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_large.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="duplicate:http://uca1.abd.muse.massey.ac.nz" uri="uca1_150_2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1371563437423" name="http://uca2.abd.muse.massey.ac.nz" uri="uca2_300.owl"/>
     </group>
 </catalog>
