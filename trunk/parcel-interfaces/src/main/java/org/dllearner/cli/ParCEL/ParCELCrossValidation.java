@@ -42,7 +42,8 @@ public class ParCELCrossValidation extends CrossValidation {
 	protected Stat noOfPartialDef;
 	protected Stat partialDefinitionLength;
 	
-	protected Stat minimalDescriptionNeeded;
+	//protected Stat minimalDescriptionNeeded;
+	//protected Stat learningtimeForBestDescription;
 
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -248,6 +249,7 @@ public class ParCELCrossValidation extends CrossValidation {
 			totalNumberOfDescriptions= new Stat();
 			
 			minimalDescriptionNeeded = new Stat();
+			learningTimeForBestDescription = new Stat();
 			
 			for(int currFold=0; (currFold<folds); currFold++) {
 
@@ -349,7 +351,7 @@ public class ParCELCrossValidation extends CrossValidation {
 						" positive and " + trainingCorrectNegClassified + "/" + trainingSetsNeg.get(currFold).size() + " negative examples");
 				outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
 						+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
-				outputWriter("  concept: " + concept);
+				//outputWriter("  concept: " + concept);
 				outputWriter("  accuracy: " + df.format(currAccuracy) +  
 						"% (corr:"+ df.format(testingCorrectness) + 
 						"%, comp:" + testingCompleteness + "%) --- " + 
@@ -362,13 +364,18 @@ public class ParCELCrossValidation extends CrossValidation {
 				
 				
 				double minDescriptions = 0;
+				double minLearningTime = 0;
 				for (ParCELExtraNode pdef : ((ParCELAbstract)la).getReducedPartialDefinition()) {
-					if (pdef.getGenerationTime() > minDescriptions)
-						minDescriptions = pdef.getGenerationTime();
+					if (pdef.getExtraInfo() > minDescriptions) {
+						minDescriptions = pdef.getExtraInfo();
+						minLearningTime = pdef.getGenerationTime();
+					}
+					
 				}
 				
-				outputWriter("  minimal number of descriptions needed: " + minDescriptions);
+				//outputWriter("  minimal number of descriptions needed: " + minDescriptions);
 				minimalDescriptionNeeded.addNumber(minDescriptions);
+				learningTimeForBestDescription.addNumber(minLearningTime);
 									
 				
 				if (la instanceof ParCELAbstract) {
@@ -380,13 +387,16 @@ public class ParCELCrossValidation extends CrossValidation {
 					this.partialDefinitionLength.addNumber(pl);
 					outputWriter("  avarage partial definition length: " + pl);		
 
-					//show more information on counter partial definitions				
+					//show more information on counter partial definitions
+					
 					if (la instanceof ParCELExAbstract) {
 						ParCELExAbstract pdllexla = (ParCELExAbstract)la;
+						/*
 						outputWriter("  number of partial definitions for each type: 1:" + pdllexla.getNumberOfPartialDefinitions(1) + 
 								"; 2:" + pdllexla.getNumberOfPartialDefinitions(2) + 
 								"; 3:" + pdllexla.getNumberOfPartialDefinitions(3) +
 								"; 4:" + pdllexla.getNumberOfPartialDefinitions(4));
+						*/
 						outputWriter("  number of counter partial definition used: " + pdllexla.getNumberOfCounterPartialDefinitionUsed() + "/" + pdllexla.getNumberOfCounterPartialDefinitions());
 						
 						//check how did the learner terminate: by partial definition or counter partial definition
@@ -416,7 +426,8 @@ public class ParCELCrossValidation extends CrossValidation {
 				outputWriter("  predictive accuracy on testing set: " + statOutput(df, accuracy, "%"));
 				outputWriter("     correctness: " + statOutput(df, testingCorrectnessStat, "%"));
 				outputWriter("     completeness: " + statOutput(df, testingCompletenessStat, "%"));
-				outputWriter("  minimal descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));
+				//outputWriter("  minimal descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));
+				//outputWriter("  minimal learning time: " + statOutput(df, learningTimeForBestDescription, ""));
 				outputWriter("----------");
 				
 				
@@ -453,8 +464,8 @@ public class ParCELCrossValidation extends CrossValidation {
 					" - corr: " + statOutput(df, testingCorrectnessStat, "%") + 
 					", comp: " + statOutput(df, testingCompletenessStat, "%"));
 			
-			if (la instanceof ParCELExAbstract)
-				outputWriter("  terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
+			//if (la instanceof ParCELExAbstract)
+			//	outputWriter("  terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
 
 			
 			//output for copying to excel/
@@ -625,8 +636,8 @@ public class ParCELCrossValidation extends CrossValidation {
 					"\n\t min.: " + statOutput(df, testingFMeasureMin, "%"));
 		}
 		
-		if (la instanceof ParCELExAbstract)
-			outputWriter("terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
+		//if (la instanceof ParCELExAbstract)
+		//	outputWriter("terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
 
 	}
 

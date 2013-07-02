@@ -11,6 +11,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.Fortification.FortificationUtils;
+import org.dllearner.algorithms.Fortification.JaccardSimilarity;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.cli.CrossValidation;
 import org.dllearner.core.ComponentInitException;
@@ -58,6 +60,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 	protected Stat avgFortifyCoverageTestStat;
 
 	protected Stat fortifiedRuntime;
+	//protected int forstificationStopOnFirstDefinition = -1;
 
 	//blind fortification
 	protected Stat accuracyBlindFortifyStat;
@@ -100,20 +103,22 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 	}
 
+	/*
 	public CELOEFortifiedCrossValidation3PhasesFair(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs, int folds,
 			boolean leaveOneOut) {
 
 		this(la, lp, rs, folds, leaveOneOut, 1, 0, 0, false);
 
 	}
+	 */
 
-
+	/*
 	public CELOEFortifiedCrossValidation3PhasesFair(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs, int folds,
 			boolean leaveOneOut, int noOfRuns) {
 
 		this(la, lp, rs, folds, leaveOneOut, noOfRuns, 0, 0, false);
 	}
-
+	*/
 
 	/**
 	 * Main method
@@ -129,7 +134,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 	 * @param fairComparison
 	 */
 	public CELOEFortifiedCrossValidation3PhasesFair(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs, int folds,
-			boolean leaveOneOut, int noOfRuns, double fortificationNoise, int fortificationTimeout, boolean fairComparison) {
+			boolean leaveOneOut, int noOfRuns, double fortificationNoise, int fortificationTimeout, boolean fairComparison, int fortificationStopOnFirstPosDefinition) {
 
 		DecimalFormat df = new DecimalFormat();
 
@@ -169,13 +174,14 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 		int[] splitsPos = calculateSplits(posExamples.size(), folds);
 		int[] splitsNeg = calculateSplits(negExamples.size(), folds);
 
+		/*
 		//for orthogonality check
 		long orthAllCheckCount[] = new long[5];
 		orthAllCheckCount[0] = orthAllCheckCount[1] = orthAllCheckCount[2] = orthAllCheckCount[3] = orthAllCheckCount[4] = 0;
 
 		long orthSelectedCheckCount[] = new long[5];
 		orthSelectedCheckCount[0] = orthSelectedCheckCount[1] = orthSelectedCheckCount[2] = orthSelectedCheckCount[3] = orthSelectedCheckCount[4] = 0;
-
+		 */
 
 		// calculating training and test sets
 		for (int i = 0; i < folds; i++) {
@@ -328,6 +334,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 		//----------------------------------------------------------------------
 
 
+		boolean celoeFirstOnFirstDefinition = ((CELOE)la).getStopOnFirstDefinition();
 
 		for (int kk = 0; kk < noOfRuns; kk++) {
 
@@ -451,7 +458,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				outputWriter("Noise: " + fortificationNoise + "%, timeout="
 						+ (fortificationTimeout > 0? fortificationTimeout : orgTimeout));
 
-
+				if (fortificationStopOnFirstPosDefinition == 0)
+					((CELOE)la).setStopOnFirstDefinition(false);
+				else if (fortificationStopOnFirstPosDefinition == 1)
+					((CELOE)la).setStopOnFirstDefinition(true);
+				
+				System.out.println("Stop on first definition: " + ((CELOE)la).getStopOnFirstDefinition());
+				
 				//adjust noise + timeout for fortification
 				((CELOE)la).setNoisePercentage(fortificationNoise);
 				if (fortificationTimeout > 0)
@@ -497,9 +510,10 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					e.printStackTrace();
 				}
 
-				//set the noise + timeout to the original values
+				//set the noise + timeout + stopOnFirstDefinition to the original values
 				((CELOE)la).setNoisePercentage(orgNoise);
 				((CELOE)la).setMaxExecutionTimeInSeconds(orgTimeout);
+				((CELOE)la).setStopOnFirstDefinition(celoeFirstOnFirstDefinition);
 
 
 				outputWriter("\n** Phase 2 - Learning the main concept");
@@ -831,12 +845,18 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					//print the cpdef which covers some pos. examples
 					//if (cpdefCp.size() > 0)
 					String changed = "";
-					if (cpChanged || cnChanged)
+					if (cpChanged || cnChanged) {
 						changed = "(" + (cpChanged?"-":"") + (cnChanged?"+":"") + ")";
 
-					outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
-							+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
-							+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+						outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
+								+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
+								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+					}
+					else if (logger.isDebugEnabled()) {
+						logger.debug(count++ + changed + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
+								+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
+								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+					}
 
 					avgCPDefLengthStat.addNumber(cpdef.getDescription().getLength());
 
@@ -1550,6 +1570,52 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					+ "%, completeness: " + statOutput(df, fairCompletenessStat, "%"));				
 			outputWriter("\tf-measure: " + statOutput(df, fairFmeasureStat, "%"));
 
+			//------------------------------------------------------------
+			//compute cut-off point and the metrics at the cut-off point
+			//------------------------------------------------------------
+			int cutOffPoint = 0;
+			//double cutOffAvg[][], cutOffDev[][];
+			//cutOffAvg = new double[3][noOfStrategies];	//0: accuracy, 1: correctness, 2: completeness
+			//cutOffDev = new double[3][noOfStrategies];
+			
+			//cut-off point is the max number of the labelled fortification definitions
+			if (noOfLabelFortifyDefinitions.getMean() > 0)	//this is for a weird side-affect of the floating point such that the getMax return a very small number >0 even if the acutuall value is zero
+				cutOffPoint = (int)Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMax()));								
+		
+			outputWriter("\n  CUT-OFF point computation: " + cutOffPoint);
+			
+			if (cutOffPoint == 0) {
+				outputWriter("\tNo fortifying definition is used, the accuracy is unchanged");
+				outputWriter("\t\taccuracy: " + df.format(accuracy.getMean()) + ", " + df.format(accuracy.getStandardDeviation()) + 
+						"; correctness: " +	df.format(testingCorrectnessStat.getMean()) + ", " + df.format(testingCorrectnessStat.getStandardDeviation()) + 
+						"; completeness: " + df.format(testingCompletenessStat.getMean()) + ", " + df.format(testingCompletenessStat.getStandardDeviation()));
+
+			}
+			else {
+				cutOffPoint--;
+				for (int i=0; i < noOfStrategies; i++) {
+					outputWriter("\t" + FortificationUtils.strategyNames[i] + ":");
+					outputWriter("\t  accuracy: " + df.format(accuracyFullStepStat[i][cutOffPoint].getMean()) + 
+							", " + df.format(accuracyFullStepStat[i][cutOffPoint].getStandardDeviation()) +
+							"; correctness: " + df.format(correctnessFullStepStat[i][cutOffPoint].getMean()) +
+							", " + df.format(correctnessFullStepStat[i][cutOffPoint].getStandardDeviation()) +
+							"; completeness: " + df.format(completenessFullStepStat[i][cutOffPoint].getMean()) +
+							", " + df.format(completenessFullStepStat[i][cutOffPoint].getStandardDeviation()) 
+							);
+					/*
+					cutOffAvg[0][i] = accuracyFullStepStat[i][cutOffPoint].getMean();							
+					cutOffAvg[1][i] = correctnessFullStepStat[i][cutOffPoint].getMean();
+					cutOffAvg[2][i] = completenessFullStepStat[i][cutOffPoint].getMean();
+					
+					cutOffDev[0][i] = accuracyFullStepStat[i][cutOffPoint].getStandardDeviation();
+					cutOffDev[1][i] = correctnessFullStepStat[i][cutOffPoint].getStandardDeviation();
+					cutOffDev[2][i] = completenessFullStepStat[i][cutOffPoint].getStandardDeviation();
+					*/							
+				}
+			}
+			
+			outputWriter("");
+		
 			//fortification by PERCENTAGE
 			for (int i=0; i< noOfStrategies; i++) {
 
@@ -1636,10 +1702,10 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			outputWriter("\n***accuracy test/blind");
 			outputWriter(df.format(accuracy.getMean()) + "  " + df.format(accuracy.getStandardDeviation())
 					+ "\n" + df.format(accuracyBlindFortifyStat.getMean()) + "  " + df.format(accuracyBlindFortifyStat.getStandardDeviation())
-			);
+			); 
 
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i<noOfStrategies; i++) {				
+			for (int i=0; i < noOfStrategies; i++) {				
 				outputWriter("accuracy - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
 				for (int j=0; j<6; j++)
 					outputWriter(df.format(accuracyPercentageFortifyStepStat[i][j].getMean()) 
@@ -1759,6 +1825,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 			outputWriter(noCpdefFortificationAcc + "\t" + noCpdefFortificationCor + "\t" + noCpdefFortificationComp + "\t" + noCpdefFortificationFm);
 
+			
 			for (int j=0; j<minCpdef; j++) {	//all cpdefs	
 				String allResult = "";	//contains all data of one cpdef
 
@@ -1772,6 +1839,9 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					bestCor = df.format(correctnessLabelFortifyStat.getMean()) + "\t";
 					bestComp = df.format(completenessLabelFortifyStat.getMean()) + "\t";
 					bestFm = df.format(fmeasureLabelFortifyStat.getMean()) + "\t";
+				
+					
+
 				}
 
 				//accuracy
@@ -1879,7 +1949,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			}
 		} // for kk folds
 
-
+		
 		if (noOfRuns > 1) {	
 			outputWriter("");
 			outputWriter("Finished " + noOfRuns + " time(s) of the " + folds + "-folds cross-validations");
@@ -1951,6 +2021,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					"\n\t max.: " + statOutput(df, testingFMesureMax, "%") +
 					"\n\t min.: " + statOutput(df, testingFMesureMin, "%"));
 		}
+		
 	}  //no of runs
 
 }

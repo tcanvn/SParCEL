@@ -75,6 +75,25 @@ public class ConceptSimilarity {
 	public ConceptSimilarity() {
 		this.reasoner = null;
 	}
+	
+	
+	
+	public static double getConceptOverlapSimple(Set<Individual> coverC, Set<Individual> coverD) {
+		
+		//compute the intersection between C and D
+		Set<Individual> intersection = new HashSet<Individual>();
+		intersection.addAll(coverC);
+		intersection.retainAll(coverD);
+		
+		int commonInstances = intersection.size();
+		int allInstances = coverC.size() + coverD.size() - commonInstances;
+		
+		double dissimilarity = commonInstances / (double)coverC.size();
+		if (dissimilarity < (commonInstances / (double)coverD.size()))
+			dissimilarity = commonInstances / (double)coverD.size();
+		
+		return commonInstances / (double)allInstances * dissimilarity;
+	}
 
 	
 	public ConceptSimilarity(AbstractReasonerComponent reasoner, Set<Individual> instances) {
@@ -338,6 +357,7 @@ public class ConceptSimilarity {
 	
 	/**
 	 * Extract the atomic/primary concepts at the top level of a description
+	 * Why List, not Set????
 	 * 
 	 * @param description
 	 * @return
@@ -349,9 +369,9 @@ public class ConceptSimilarity {
 				(description instanceof Nothing))
 			result.add(description);		
 		else if (description instanceof Negation) {
-			List<Description> primNegated = prim(description.getChild(0));
+			List<Description> primNegated = prim(description.getChild(0));	
 			if (primNegated.size() > 0)
-				result.add(description);
+				result.add(description);	//TODO: wrong here???
 		}
 		else if ((description instanceof Intersection) || (description instanceof Union)) {
 			for (Description child : description.getChildren()) {
@@ -367,8 +387,36 @@ public class ConceptSimilarity {
 	} //prim()
 	
 	
+	
+	public static Set<Description> primSet(Description description) {
+		Set<Description> result = new HashSet<Description>();
+		
+		if ((description instanceof NamedClass) ||(description instanceof Thing) ||
+				(description instanceof Nothing))
+			result.add(description);
+		else if (description instanceof Negation) {
+			Set<Description> primNegation = primSet(description.getChild(0));
+			if (primNegation.size() > 0) {
+				for (Description d : primNegation)
+				result.add(new Negation(d));
+			}
+		}
+		else if ((description instanceof Intersection) || (description instanceof Union)) {
+			for (Description child : description.getChildren()) {
+			
+				Set<Description> tmp = primSet(child);
+				for (Description des : tmp)
+					if (!result.contains(des))
+							result.add(des);
+			}
+		}		
+		
+		return result;
+	} //prim()
+	
 	/**
 	 * Return a list of properties used in a given description.
+	 * Why List, not Set???
 	 *  
 	 * @param description Description
 	 * 
@@ -393,6 +441,26 @@ public class ConceptSimilarity {
 		return result;
 	} //getProperty()
 	
+	
+	
+	public static Set<PropertyExpression> getPropertySet(Description description) {
+		Set<PropertyExpression> result = new HashSet<PropertyExpression>();
+		
+		if ((description instanceof Restriction))
+				result.add(((Restriction)description).getRestrictedPropertyExpression());
+		else if (description instanceof Intersection) {
+			for (Description child : description.getChildren()) {
+				
+				//do not use addAll to avoid duplicate???
+				List<PropertyExpression> tmp = getProperty(child); 
+				for (PropertyExpression pro : tmp)
+					if (!result.contains(pro))
+						result.add(pro);
+			}
+		}
+		
+		return result;
+	} //getPropertySet()
 	
 	/**
 	 * Get the Range of a property in a given description 
@@ -901,6 +969,7 @@ public class ConceptSimilarity {
 	 * @throws OWLOntologyCreationException 
 	 */
 	public static void main(String[] args) throws OWLOntologyCreationException {
+
 		
 		ConceptSimilarity similarityChecker = new ConceptSimilarity();
 		
@@ -1123,9 +1192,12 @@ public class ConceptSimilarity {
 		System.out.println("----------------");
 		
 		//System.out.println("sn (C, D) = " + simNum(Example2.C, Example2.D));
-		System.out.println("similarity(person, animal) = " + similarityChecker.disjunctiveSimilarity(Example2.person, Example2.animal));
+		//System.out.println("similarity(person, animal) = " + similarityChecker.disjunctiveSimilarity(Example2.person, Example2.animal));
 		System.out.println("similarity(C, D) = " + similarityChecker.disjunctiveSimilarity(Example2.C, Example2.D));
 		
+		Union person_or_not_male_and_person = new Union(Example2.person_and_not_male, Example2.person);
+		
+		System.out.println(normalise(0, person_or_not_male_and_person));
 		
 	}
 	
@@ -1190,20 +1262,23 @@ public class ConceptSimilarity {
 		public static ObjectProperty hasChild = new ObjectProperty("hasChild");
 		public static Negation notMale = new Negation(male);
 		public static Intersection person_and_not_male = new Intersection(person, notMale);
+		public static Union person_or_not_male = new Union(person, notMale);
 		
 		public static NamedClass animal = new NamedClass("animal");		
 		
-		public static ObjectAllRestriction marriedTo_all_Person = new ObjectAllRestriction(marriedTo, person);		
-		public static ObjectAllRestriction marriedTo_all_person_and_not_male = new ObjectAllRestriction(marriedTo, person_and_not_male);
+		public static ObjectSomeRestriction marriedTo_all_Person = new ObjectSomeRestriction(marriedTo, person);		
+		public static ObjectAllRestriction marriedTo_all_person_and_not_male = new ObjectAllRestriction(marriedTo, person_and_not_male);		
+		public static ObjectAllRestriction marriedTo_all_person_or_not_male = new ObjectAllRestriction(marriedTo, person_or_not_male);
 		public static ObjectCardinalityRestriction hasChild_less_1 = new ObjectMaxCardinalityRestriction(1, hasChild, thing);
 		public static ObjectCardinalityRestriction hasChild_less_2 = new ObjectMaxCardinalityRestriction(2, hasChild, thing);
 		
 		public static Description C = new Intersection(person, marriedTo_all_Person, hasChild_less_1);
-		public static Description D = new Intersection(male, marriedTo_all_person_and_not_male, hasChild_less_2);
+		public static Description D = new Intersection(male, marriedTo_all_person_or_not_male, hasChild_less_2, marriedTo_all_Person);
 		
-		public static ObjectProperty hasParent = new ObjectProperty("hasParent");
-
-		
+		public static ObjectProperty hasParent = new ObjectProperty("hasParent");		
 	}
+	
+	
+
 }
  

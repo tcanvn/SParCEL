@@ -11,6 +11,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.Fortification.FortificationUtils;
+import org.dllearner.algorithms.Fortification.JaccardSimilarity;
 import org.dllearner.algorithms.ParCEL.ParCELAbstract;
 import org.dllearner.algorithms.ParCEL.ParCELExtraNode;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
@@ -835,12 +837,26 @@ public class ParCELFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					
 					//print the cpdef which covers some pos. examples
 					String changed = "";
+					if (cpChanged || cnChanged) {
+						changed = "(" + (cpChanged?"-":"") + (cnChanged?"+":"") + ")";
+
+						outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
+								+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
+								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+					}
+					else if (logger.isDebugEnabled()) {
+						logger.debug(count++ + changed + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
+								+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
+								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+					}
+					/*
 					if (cpChanged || cnChanged)
 						changed = "(" + (cpChanged?"-":"") + (cnChanged?"+":"") + ")";
 					
 					outputWriter(count++ + changed + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
 							+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
-							+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));	
+							+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+					*/	
 				}
 				
 				outputWriter( " * Blind fortifcation summary: cp=" + cpdefPositiveCovered + " --- cn=" + cpdefNegativeCovered);
@@ -1340,7 +1356,7 @@ public class ParCELFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				// of the CURRENT fold
 				//--------------------------------
 				outputWriter("Fold " + currFold + "/" + folds + ":");
-				outputWriter("  concept: " + concept.toKBSyntaxString(baseURI, prefixes));
+				//outputWriter("  concept: " + concept.toKBSyntaxString(baseURI, prefixes));
 				
 				//training and test error
 				outputWriter("  training: " + correctTrainingPosClassified + "/" + curFoldPosTrainingSet.size() + 
@@ -1555,6 +1571,53 @@ public class ParCELFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					+ "-- correctness: " + statOutput(df, fairCorrectnessStat, "%") 
 					+ "%, completeness: " + statOutput(df, fairCompletenessStat, "%"));				
 			outputWriter("\tf-measure: " + statOutput(df, fairFmeasureStat, "%"));
+			
+			
+			//------------------------------------------------------------
+			//compute cut-off point and the metrics at the cut-off point
+			//------------------------------------------------------------
+			int cutOffPoint = 0;
+			//double cutOffAvg[][], cutOffDev[][];
+			//cutOffAvg = new double[3][noOfStrategies];	//0: accuracy, 1: correctness, 2: completeness
+			//cutOffDev = new double[3][noOfStrategies];
+			
+			//cut-off point is the max number of the labelled fortification definitions
+			if (noOfLabelFortifyDefinitions.getMean() > 0)	//this is for a weird side-affect of the floating point such that the getMax return a very small number >0 even if the acutuall value is zero
+				cutOffPoint = (int)Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMax()));								
+		
+			outputWriter("\n  CUT-OFF point computation: " + cutOffPoint);
+			if (cutOffPoint == 0) {
+				outputWriter("\tNo fortifying definition is used, the accuracy is unchanged");
+				outputWriter("\t\taccuracy: " + df.format(accuracy.getMean()) + ", " + df.format(accuracy.getStandardDeviation()) + 
+						"; correctness: " +	df.format(testingCorrectnessStat.getMean()) + ", " + df.format(testingCorrectnessStat.getStandardDeviation()) + 
+						"; completeness: " + df.format(testingCompletenessStat.getMean()) + ", " + df.format(testingCompletenessStat.getStandardDeviation()));
+			}
+			else {
+				cutOffPoint--;
+				for (int i=0; i < noOfStrategies; i++) {
+					outputWriter("\t" + FortificationUtils.strategyNames[i] + ":");
+					outputWriter("\t  accuracy: " + df.format(accuracyFullStepStat[i][cutOffPoint].getMean()) + 
+							", " + df.format(accuracyFullStepStat[i][cutOffPoint].getStandardDeviation()) +
+							"; correctness: " + df.format(correctnessFullStepStat[i][cutOffPoint].getMean()) +
+							", " + df.format(correctnessFullStepStat[i][cutOffPoint].getStandardDeviation()) +
+							"; completeness: " + df.format(completenessFullStepStat[i][cutOffPoint].getMean()) +
+							", " + df.format(completenessFullStepStat[i][cutOffPoint].getStandardDeviation()) 
+							);
+					/*
+					cutOffAvg[0][i] = accuracyFullStepStat[i][cutOffPoint].getMean();							
+					cutOffAvg[1][i] = correctnessFullStepStat[i][cutOffPoint].getMean();
+					cutOffAvg[2][i] = completenessFullStepStat[i][cutOffPoint].getMean();
+					
+					cutOffDev[0][i] = accuracyFullStepStat[i][cutOffPoint].getStandardDeviation();
+					cutOffDev[1][i] = correctnessFullStepStat[i][cutOffPoint].getStandardDeviation();
+					cutOffDev[2][i] = completenessFullStepStat[i][cutOffPoint].getStandardDeviation();
+					*/							
+				}
+			}
+			//end of cut-off point processing
+			
+			outputWriter("");
+
 			
 			//fortification by PERCENTAGE
 			for (int i=0; i< noOfStrategies; i++) {

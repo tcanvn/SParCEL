@@ -193,6 +193,7 @@ public class ParCELWorkerExV2 implements Runnable {
 							if (newNode.getCorrectness() < 1d) {
 								newNode.setType(ParCELExNodeTypes.COUNTER_PARTIAL_DEFINITION_UNUSED);	//0
 								newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+								newNode.setExtraInfo(learner.getTotalDescriptions());
 								newNode.setDescription(new Negation(newNode.getDescription()));
 								newCounterPartialDefinitions.add(newNode);							
 							}
@@ -200,8 +201,8 @@ public class ParCELWorkerExV2 implements Runnable {
 						else {						
 							//PARTIAL DEFINITION
 							if (newNode.getCorrectness() == 1.0d) {
-								//newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
-								newNode.setGenerationTime(learner.getTotalDescriptions());
+								newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+								newNode.setExtraInfo(learner.getTotalDescriptions());
 								newNode.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_DIRECT_REFINED);	//1
 								newPartialDefinitions.add(newNode);
 							}
@@ -224,6 +225,7 @@ public class ParCELWorkerExV2 implements Runnable {
 									//3 - means the partial definition is the result of the combination of a new refined description and a counter partial definition  
 									newNode.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_ONLINE_COMBINATION);	
 									newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+									newNode.setExtraInfo(learner.getTotalDescriptions());
 									newPartialDefinitions.add(newNode);
 								}
 								else	//the new node cannot be combined ==> this is a DESCRIPTION  
@@ -249,6 +251,7 @@ public class ParCELWorkerExV2 implements Runnable {
 			
 			ParCELExtraNode newPD = new ParCELExtraNode(nodeToProcess);
 			newPD.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+			newPD.setExtraInfo(learner.getTotalDescriptions());
 			newPD.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_REFINED_NODE);	//4 - (refined node + counter pdef) 
 			newPartialDefinitions.add(newPD);
 		}
