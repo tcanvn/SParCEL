@@ -1,4 +1,4 @@
-SParCEL is the implementation of the Symmetric Parallel Class Expression Learning Algorithm (SParCEL). This is a supervised machine learning in Description Logics. 
+SParCEL is the implementation of the Symmetric Parallel Class Expression Learning Algorithm. This is a supervised machine learning in Description Logics. 
 
 SparCEL is Open Source and licensed under the GNU General Public License 3.
 
